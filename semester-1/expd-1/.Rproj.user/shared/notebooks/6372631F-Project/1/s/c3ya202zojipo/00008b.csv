@@ -1,0 +1,2 @@
+"0","gruppen <- unique(data$AlterV20Kurz)"
+"0","legend(x=87, y=9000, col = c(""turquoise"", ""yellow"", ""green"", ""red"", ""orange"", ""blue""), pch = 15, legend = gruppen)"

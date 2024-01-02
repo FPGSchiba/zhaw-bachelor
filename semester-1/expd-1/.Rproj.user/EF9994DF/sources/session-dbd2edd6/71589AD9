@@ -1,0 +1,28 @@
+{
+    "id": "71589AD9",
+    "path": "~/Projects/School-Projects/zhaw/expd-1/Prakt_2311.R",
+    "project_path": "Prakt_2311.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1700751457712.0,
+    "source_on_save": false,
+    "relative_order": 6,
+    "properties": {
+        "tempName": "Untitled1",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "64,0",
+        "scrollLine": "0",
+        "disableDependencyDiscovery": "1"
+    },
+    "folds": "0|14|39|0|\n40|17|47|0|\n",
+    "lastKnownWriteTime": 1700755573,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1700755573023,
+    "read_only": false,
+    "read_only_alternatives": []
+}

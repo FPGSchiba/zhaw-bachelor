@@ -1,0 +1,2 @@
+"0","tomaten$weight3W <- tomaten$weight^(1/3)"
+"0","scatter.smooth(tomaten$diameter, tomaten$weight3W, lpars = list(col = ""red""))"

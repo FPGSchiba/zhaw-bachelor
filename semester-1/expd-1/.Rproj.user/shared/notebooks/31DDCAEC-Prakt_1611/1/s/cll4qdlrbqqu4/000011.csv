@@ -1,0 +1,2 @@
+"0","legend(""topleft"", legend = levels(tomaten$fertilizer),"
+"0","       col=c(""green"", ""blue"", ""red"", ""orange""), pch=1)"
