@@ -1,0 +1,66 @@
+---
+title: "Pitch"
+format:
+  pdf:
+    documentclass: report
+editor: visual
+---
+
+## Initial Situation
+
+- Proteins are a fundamental bilding stones of life
+  - Creating Enegery from Food
+  - Transporting Oxygen
+  - Immune System
+- only 24% of human proteins are experimentally discovered
+- Slow progress due to complex structure:
+  - primary: Sequence of amino acids
+  - secondary: Repeating pattern of amino chains
+  - tertiary: three dimensional folding pattern of amino acids
+  - Multiple tertiary structures make up one protein
+
+## Solution & Methods
+
+- AlphaFold
+  - Neural Network Architecture (DL) to predict Protein structure
+  - Utilizing Multi Sequence Alignment (Historical Protein Relations)
+- Outperforming
+- Loss Caluculation & Atomical Accuracy
+- Innovations
+  - ChatGPT Technology for predictions
+  - Iterative refinement for accuracy
+  - Direct 3D-Structure predictions
+  - Architecture:
+    - Input
+    - Evoformer (Analysing Relations and combining)
+    - Transformer (Creating 3D-Strucute from Evoformer)
+- Prediction example
+
+{{< pagebreak >}}
+
+## Discussion
+
+- Advantages
+  - Open Access for everyone
+  - Color Coded confidence, as shown in the example
+- Limitations
+  - Undiscovered Preoteins without Relatives cannot be accuratly predicted
+  - Environmental Changes and Evolution of Proteins
+- Ongoing Development and refinement by Google DeepMind
+  - Regular Updates
+- Future of AlphaFold
+  - Broaden Capabilities
+  - Predict more diverse Strucutres
+  - be less dependent on experimental protein discoveries
+
+## Social Benefit
+
+- Advancements made possible for
+  - Medical Fields / Drug Development
+  - Resource efficiency
+- Which Improves
+  - Agricultural Labor / Food industries
+  - Faster and more accurate Drug Development
+- Future research speedup in fields involving Life
+
+

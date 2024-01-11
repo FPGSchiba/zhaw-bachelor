@@ -1,1 +1,0 @@
-"0","plot(x=alters_data$alter, y=alters_data$summe, type = ""o"", ylab=""Anzahl"", xlab=""Alter"", main=""Anzahl Personen pro Alter im Jahr 2022"")"

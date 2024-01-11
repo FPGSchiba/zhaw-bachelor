@@ -1,3 +1,0 @@
-"0","plot(tomaten$diameter, tomaten$weight,"
-"0","     col=c(""green"", ""blue"", ""red"", ""orange"")[tomaten$fertilizer],"
-"0","     las = 1, xlab = ""Diameter"", ylab = ""Gewicht"")"
