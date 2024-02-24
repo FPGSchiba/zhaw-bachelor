@@ -16,8 +16,12 @@ def find_prime_numbers(number: int):
     list_of_prime_numbers = list_of_numbers[1:]
     for i, num in enumerate(list_of_numbers):
         for check in list_of_check_numbers:
-            print(f'Checking {num} with {check}')
             if num % check == 0 and num != check and num not in SMALL_PRIME:
                 if num in list_of_prime_numbers:
                     list_of_prime_numbers.remove(num)
     return list_of_prime_numbers
+
+
+if __name__ == '__main__':
+    primes = find_prime_numbers(100)
+    print(primes)
