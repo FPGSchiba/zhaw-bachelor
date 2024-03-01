@@ -3,7 +3,7 @@
 PROG2 P01.1: Draw a Match game done with Python
 
 @date: 24.02.2024
-@author: Jann Erhardt
+@author: Jann Erhardt, Johannes Werder, Simone Fabio
 """
 import random
 
