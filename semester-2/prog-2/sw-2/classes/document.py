@@ -5,6 +5,8 @@ PROG2 P02.1: Class Room exercise with classes.
 @date: 02.03.2024
 @author: Jann Erhardt, Simone Fabio
 """
+
+
 class Document:
     """
     A rather bad written document with many errors (probably)
@@ -26,12 +28,13 @@ class Document:
         return True
 
     def get_content(self):
-            return "Content is private" if self.__private_content else "No content"
+        return "Content is private" if self.__private_content else "No content"
 
     def display_info(self):
-            print(f"Title: {self.title}")
-            print(f"Owner: {self.owner}")
-            print(self.get_content())
+        print(f"Title: {self.title}")
+        print(f"Owner: {self.owner}")
+        print(self.get_content())
+
 
 if __name__ == '__main__':
     d = Document("Spaghetti Code", "Chrüterkraft")

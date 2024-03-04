@@ -8,7 +8,6 @@ PROG2 P02.1: Class Room exercise with classes.
 
 
 class Table:
-
     def __init__(self, table_number=""):
         self.table_number = table_number
         self.__private_occupancy = []  # Added a list to easily add/remove Students
@@ -44,8 +43,3 @@ if __name__ == '__main__':
     print(table.add_occupancy("Simone Fabio", "Seat 1"))  # Add Occupancy Student 1
     print(table.add_occupancy("Jann Erhardt", "Seat 2"))  # Add Occupancy Student 2
     print(table.get_occupancy())  # Should print the current occupancy list
-
-    """"  
-    print(table.remove_occupancy("Simone Fabio", "Seat 1"))  # Remove Occupancy Student 1
-    print(table.get_occupancy())  # Updated occupancy list after removal    
-    """
