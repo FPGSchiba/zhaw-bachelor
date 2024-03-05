@@ -45,7 +45,8 @@ is not available anymore
 """
 Remove a student from the table return true 
 and if there is no student at the table return false
-took me an hour to get this right, does this even work? 
+took me an hour to get this right together with add_occupancy, 
+does this even work? 
 """
 
     def remove_occupancy(self, student: Student) -> bool:
