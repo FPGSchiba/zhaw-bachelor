@@ -11,11 +11,11 @@ PROG2 P02.1: Class Room exercise with classes.
 # Docstrings are """ under the function with information in it.
 # ChatGPT is very good in creating those :D
 class Teacher:
+    """
+    A busy teacher who has a name and an email address
+    and needs to go through a lot of documents.
+    """
 
-"""
-A busy teacher who has a name and an email address
-and needs to go through a lot of documents.
-"""
     def __init__(self, name="", email_address=""):
         self.name = name
         self.email_address = email_address
@@ -24,65 +24,52 @@ and needs to go through a lot of documents.
         # Missing s (should be documents)
         self.__documents = []
 
-"""
-to be deleted
-
-    # Not specified in the Diagram
-    def set_name(self, name: str):
-        self.name = name
-
-    # not specified in the Diagram
-    def set_email_address(self, email_address: str):
-        self.email_address = email_address
-
-    # Not specified in the Diagram
-    def update_private_document(self, text: str):
-        # Here its right, but not found, because of the s :D
-        self.__private_documents = text
-        return True
-
-------------------------------------------------------------------------
-
-explanation needed for __repr__
-    
-    # Not specified in Diagram
-    # Could be method: __repr__ (I can explain more)
-    
-    def display_info(self):
-        print(f"Name: {self.name}")
-        print(f"Email-Address: {self.email_address}")
-        print(self.get_content())
-        
-"""
-
-    # Missing methods should go here:
-    # teach()
-    # receive_documents()
-    # distribute_document()
-
+    # Here just return the self.__documents
+    # private is more used to disable editing from the ourside :D
+    # but good idea.
+    # Missing docstring
     def get_documents(self):
         return "Content is private" if self.__documents else "No content"
 
+    # Good Job. Nice
+    # Missing docstring
     def teach(self, time: int) -> bool:
         teaching = False
         if time >= 90 and self.name != "":
             teaching = True
         return teaching
 
+    # Here should be a list of documents as inputs.
+    # so documents: list[Document]
+    # And in the function the __documents should be overwritten
+    # Docstring should look like this:
     def receive_documents(self, document: str) -> bool:
-        """Adding a document to the list and returning True if it's a success"""
+        """
+        Adding a document to the list and returning True if it's a success
+        :param document: Document, explenation of the parameter 'document' here.
+        :return: bool, what is returned here?
+        """
         self.__documents.append(document)
         return True
 
+    # Typo: distribute_document (no 's')
+    # Document parameter type should be: document: Document
+    # Very good function
+    # Docstring, like 'receive_documents'
     def distribute_documents(self, document: str) -> bool:
-        """Distribute a document back to the student and return True if it's a success"""
+        """
+        Distribute a document back to the student and return True if it's a success
+        """
         self.__documents.remove(document)
         return True
 
+    # explanation needed for __repr__
+    # Missing docstring
     def display_documents(self):
         print(f"Name: {self.name}")
         print(f"Email Address: {self.email_address}")
         print(self.get_documents())
+
 
 # Very good :D
 if __name__ == '__main__':
