@@ -22,3 +22,34 @@ for (i in 1:nsim) {
 }
 
 zaehler / nsim
+
+# ---- Aufgabe 3 ----
+# A
+factorial(5) / factorial(2)
+factorial(4) / factorial(2)
+12/60
+
+# B
+factorial(7) * factorial(2) / factorial(8)
+
+# C
+factorial(11) / factorial(6)
+
+# D
+
+choose(5, 2) * choose(7, 3)
+5 * choose(7, 3)
+
+# E
+choose(90, 3) / choose(100, 3)
+
+# f
+factorial(35) / factorial(30)
+choose(10, 5)
+
+# ---- Afugabe 4 ----
+# A
+0.5**4
+0.5**3
+0.5**2
+0.5**1
