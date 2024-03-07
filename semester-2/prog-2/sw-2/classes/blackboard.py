@@ -6,12 +6,12 @@ PROG2 P02.1: Class Room exercise with classes.
 @author: Jann Erhardt, Simone Fabio
 """
 
-class blackboard:
+
+class Blackboard:
     def __init__(self):
         self.content = ""
 
-
-    def add_content(self,text:str) -> bool:
+    def add_content(self, text: str) -> bool:
         self.content = text + self.content
         return True
 
@@ -19,13 +19,12 @@ class blackboard:
         self.content = ""
         return True
 
+    def __repr__(self):
+        return f'<Blackboard: \\ content: {self.content} />'
+
 
 if __name__ == '__main__':
-    b = blackboard()
+    b = Blackboard()
     b.add_content("Banane")
     b.add_content("Thomas")
-    print(b.content)
-
-
-
-
+    print(b)

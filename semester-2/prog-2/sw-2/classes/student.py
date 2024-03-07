@@ -27,6 +27,9 @@ class Student:
             result = True
         return result
 
+    def __repr__(self):
+        return f'<Student: \\ name: {self.name}, email_address: {self.email_address} />'
+
 
 if __name__ == '__main__':
     test_student = Student('Test', 'test@example.com')
