@@ -21,6 +21,7 @@ class BankAccount:
         self.interest = 0.001  # More Savings then youth accounts -> defaults to savings
         self.current_month, _ = divmod(datetime.datetime.now().second, 10)
 
+
     def open_account(self) -> bool:
         if not self.open:
             self.open = True
@@ -56,7 +57,11 @@ class BankAccount:
         self.currency = currency
 
     def check_interest(self):
+        if self.balance < 0:
+            return self.balance - self.balance * 0.02
+
         raise NotImplementedError()
+
 
     def __repr__(self):
         return f"<BankAccount: \\ Balance: {self.balance}, Currency: {self.currency}, open: {self.open}, IBAN: {self.IBAN} />"
