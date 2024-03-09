@@ -8,14 +8,14 @@ PROG2 P02 1.1: Comments and prints
 
 from bank_account import BankAccount
 
+
 class SavingsAccount(BankAccount):
     def __init__(self):
         self.limit_overcharge_interest = 0.0
         super().__init__()
         print('Savings Account')
 
+
 if __name__ == '__main__':
     savingsAccount = SavingsAccount()
     print(savingsAccount.balance)
-
-

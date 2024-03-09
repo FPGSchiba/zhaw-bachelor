@@ -57,10 +57,13 @@ class BankAccount:
         self.currency = currency
 
     def check_interest(self):
-        if self.balance < 0:
-            return self.balance - self.balance * 0.02
+        if self.balance > 0:
+            self.balance = self.balance + self.balance * self.interest
+        month, _ = divmod(datetime.datetime.now().second, 10)
+        if self.current_month == month:
+            return
+        
 
-        raise NotImplementedError()
 
 
     def __repr__(self):
