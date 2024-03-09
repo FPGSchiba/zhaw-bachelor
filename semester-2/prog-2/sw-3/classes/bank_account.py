@@ -9,6 +9,7 @@ PROG2 P02 1.1: Comments and prints
 import math
 import random
 import string
+import datetime
 
 
 class BankAccount:
@@ -17,6 +18,8 @@ class BankAccount:
         self.balance = 0.0
         self.open = True
         self.currency = ("Fr.", "Rp.")
+        self.interest = 0.001  # More Savings then youth accounts -> defaults to savings
+        self.current_month, _ = divmod(datetime.datetime.now().second, 10)
 
     def open_account(self) -> bool:
         if not self.open:
@@ -52,6 +55,9 @@ class BankAccount:
     def change_currency(self, currency: tuple[str, str]):
         self.currency = currency
 
+    def check_interest(self):
+        raise NotImplementedError()
+
     def __repr__(self):
         return f"<BankAccount: \\ Balance: {self.balance}, Currency: {self.currency}, open: {self.open}, IBAN: {self.IBAN} />"
 
@@ -62,3 +68,5 @@ if __name__ == '__main__':
 
     test_account.change_currency(("Dollar", "Cents"))
     print(test_account.retrieve_balance())
+
+    test_account.check_interest()
