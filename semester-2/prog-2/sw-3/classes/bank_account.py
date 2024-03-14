@@ -53,7 +53,7 @@ class BankAccount:
         second_currency = (self.balance - main_currency) * 100
         return f"{main_currency} {self.currency[0]} {second_currency} {self.currency[1]}"
 
-    def change_currency(self, currency: tuple[str, str]):
+    def change_currency(self, currency: tuple):
         self.currency = currency
 
     def check_interest(self):
