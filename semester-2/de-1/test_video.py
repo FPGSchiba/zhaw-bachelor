@@ -11,8 +11,14 @@ video_iter = tqdm(range(1, video_length))
 for i in video_iter:
     video_iter.set_description('Downloading video')
     url = url.replace("%NUM%", f"{i:d}")
-    response = requests.get(url)
+    try:
+        response = requests.get(url)
+    except:
+        print("Something went wrong")
+        print(response)
+        break
     if response.status_code != 200:
+        print(response.status_code)
         break
     video_content += response.content
 

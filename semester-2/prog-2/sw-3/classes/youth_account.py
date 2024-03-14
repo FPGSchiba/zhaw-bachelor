@@ -4,10 +4,11 @@ PROG2 P02 1.1: Comments and prints
 
 @date: 09.03.2024
 @author: Jann Erhardt, Simone Fabio, Johannes Werder
-""" 
+"""
 
 from bank_account import BankAccount
 import datetime
+
 
 class YouthAccount(BankAccount):
     def __init__(self, birthdate: datetime.date):
@@ -31,9 +32,9 @@ class YouthAccount(BankAccount):
             return False
 
     def deposit(self, amount: float) -> str:
-        if super().deposit(amount) :
+        if super().deposit(amount):
             pass
-        #Help
+        # Help
 
     def withdraw(self, amount: float) -> str:
         if datetime.datetime.now().month != self.current_month:
@@ -46,7 +47,8 @@ class YouthAccount(BankAccount):
             return super().withdraw(amount)
 
     def __repr__(self):
-        return f"Youth Account\nIBAN: {self.IBAN}\nBalance: {self.balance}CHF\nInterest Rate: {self.interest*100}%\nWithdrawn This Month: {self.withdrawn_this_month}CHF"
+        return f"Youth Account\nIBAN: {self.IBAN}\nBalance: {self.balance}CHF\nInterest Rate: {self.interest * 100}%\nWithdrawn This Month: {self.withdrawn_this_month}CHF"
+
 
 if __name__ == '__main__':
     account = YouthAccount(datetime.date(2000, 1, 1))
