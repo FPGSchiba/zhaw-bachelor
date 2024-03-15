@@ -9,17 +9,17 @@ PROG2 P02 1.1: Comments and prints
 from bank_account import BankAccount
 import datetime
 
-
 class YouthAccount(BankAccount):
     def __init__(self, birthdate: datetime.date):
         super().__init__()
         self.birthdate = birthdate
-        self.current_month = datetime.datetime.now().month
         self.monthly_withdraw_limit = 2000.0
         self.withdrawn_this_month = 0.0
         self.interest = 0.02
         if not self._is_young_enough():
             raise ValueError("interdit et retour")
+            
+        # Zugriffsmethode machen auf die Währung
 
     def _is_young_enough(self):
         return datetime.date.today().year - self.birthdate.year <= 25
@@ -52,4 +52,5 @@ class YouthAccount(BankAccount):
 
 if __name__ == '__main__':
     account = YouthAccount(datetime.date(2000, 1, 1))
+    
     print(account)
