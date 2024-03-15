@@ -108,9 +108,14 @@ class BankAccount:
         """
         if not self.open:
             return "Account is closed."
-        main_currency = math.floor(self.balance)
-        second_currency = (self.balance - main_currency) * 100
-        return f"{main_currency} {self.currency[0]} {second_currency} {self.currency[1]}"
+        if self.balance >= 0:
+            main_currency = math.floor(self.balance)
+            second_currency = (self.balance - main_currency) * 100
+            return f"{main_currency} {self.currency[0]} {second_currency} {self.currency[1]}"
+        else:
+            main_currency = math.ceil(self.balance)
+            second_currency = abs((self.balance - main_currency)) * 100
+            return f"{main_currency} {self.currency[0]} {second_currency} {self.currency[1]}"
 
     def change_currency(self, currency: tuple):
         """
