@@ -39,7 +39,7 @@ class YouthAccount(BankAccount):
     def withdraw(self, amount: float) -> str:
         if datetime.datetime.now().month != self.current_month:
             self.withdrawn_this_month = 0
-            self.current_month = datetime.datetime.now().month
+            self.current_month, _ = divmod(datetime.datetime.now().second, 10)
         if self.withdrawn_this_month + amount > self.monthly_withdraw_limit:
             return "Withdraw limit exceeded for this month."
         else:
