@@ -6,7 +6,7 @@ PROG2 P02 1.1: Comments and prints
 @author: Jann Erhardt, Simone Fabio, Johannes Werder
 """
 
-from bank_account import BankAccount
+from .bank_account import BankAccount
 import datetime
 
 
