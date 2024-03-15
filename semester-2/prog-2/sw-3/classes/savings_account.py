@@ -25,11 +25,6 @@ class SavingsAccount(BankAccount):
             super().__init__()  # Initialize the sub class
             self.overdraft_fee_rate = 0.02  # Additional charge for overdrafts
 
-        def set_monthly_interest_rate(self, new_rate: float):
-            """
-            Set a new monthly interest rate.
-            """
-            self.interest = new_rate
 
         def withdraw(self, amount: float) -> str:
             """
@@ -44,11 +39,9 @@ class SavingsAccount(BankAccount):
                 overdraft_amount = amount - self.balance
                 additional_charge = overdraft_amount * self.overdraft_fee_rate
                 total_amount = amount + additional_charge
-                if self.balance - total_amount <= 0:
-                    return self.retrieve_balance()
-                else:
-                    self.balance -= total_amount
-                    return self.retrieve_balance() + f" Including overdraft fee of {additional_charge} {self.currency[0]}"
+
+                self.balance -= total_amount
+                return self.retrieve_balance() + f" Including overdraft fee of {additional_charge} {self.currency[0]}"
             else:
                 return super().withdraw(amount)
 
