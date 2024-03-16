@@ -51,6 +51,12 @@ class SavingsAccount(BankAccount):
         else:
             return super().withdraw(amount)
 
+    def __repr__(self):
+        self.check_interest()
+        return (f"<SavingsAccount: \\ Balance: {self.balance}, Currency: {self.currency}, open: {self.open}, "
+                f"IBAN: {self.IBAN}, Fee: {self.overdraft_fee_rate}, Interest Rate: {self.interest * 100}%, "
+                f"Month: {self.current_month}, Year: {self.current_year} />")
+
 
 if __name__ == '__main__':
     savingsAccount = SavingsAccount()

@@ -95,9 +95,10 @@ class YouthAccount(BankAccount):
             str: A string representation of the YouthAccount instance.
         """
         self.check_interest()
-        return (f"Youth Account\nIBAN: {self.IBAN}\nBalance: {self.balance}CHF\n"
-                f"Interest Rate: {self.interest * 100}%\n"
-                f"Withdrawn This Month: {self.withdrawn_this_month}CHF")
+        return (f"<YouthAccount: \\ Balance: {self.balance}, Currency: {self.currency}, open: {self.open}, "
+                f"IBAN: {self.IBAN}, Interest Rate: {self.interest * 100}%, "
+                f"Withdrawn This Month: {self.withdrawn_this_month} CHF, "
+                f"Month: {self.current_month}, Year: {self.current_year} />")
 
 
 if __name__ == '__main__':
