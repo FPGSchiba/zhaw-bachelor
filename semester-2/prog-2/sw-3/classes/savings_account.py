@@ -39,7 +39,7 @@ class SavingsAccount(BankAccount):
         """
         if not self.open:
             return "Account is closed."
-
+        self.check_interest()
         # Check if the withdrawal will cause an overdraft and apply fees if that happens
         if self.balance - amount < 0:
             overdraft_amount = amount - self.balance

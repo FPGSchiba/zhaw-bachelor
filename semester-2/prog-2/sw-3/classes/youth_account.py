@@ -77,6 +77,7 @@ class YouthAccount(BankAccount):
         Returns:
             str: A message indicating the outcome of the withdraw operation.
         """
+        self.check_interest()
         if datetime.datetime.now().month != self.current_month:
             self.withdrawn_this_month = 0
             self.current_month, _ = divmod(datetime.datetime.now().second, 10)
@@ -93,6 +94,7 @@ class YouthAccount(BankAccount):
         Returns:
             str: A string representation of the YouthAccount instance.
         """
+        self.check_interest()
         return (f"Youth Account\nIBAN: {self.IBAN}\nBalance: {self.balance}CHF\n"
                 f"Interest Rate: {self.interest * 100}%\n"
                 f"Withdrawn This Month: {self.withdrawn_this_month}CHF")

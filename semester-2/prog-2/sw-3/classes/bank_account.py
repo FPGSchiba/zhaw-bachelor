@@ -136,8 +136,9 @@ class BankAccount:
         year = datetime.datetime.now().minute
         dif_year = year - self.current_year
         dif_month = month - self.current_month
-
-        if dif_year >= 1:
+        if dif_year == 0:
+            interest_counter = abs(dif_month)
+        elif dif_year >= 1:
             interest_counter = 7 * dif_year - abs(dif_month)
         else:
             interest_counter = dif_month
@@ -154,6 +155,7 @@ class BankAccount:
         Returns:
             str: A string representation including balance, currency, account status, and IBAN.
         """
+        self.check_interest()
         return f"<BankAccount: \\ Balance: {self.balance}, Currency: {self.currency}, open: {self.open}, IBAN: {self.IBAN} />"
 
 
