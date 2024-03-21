@@ -12,12 +12,35 @@ from savings_account import SavingsAccount
 from youth_account import YouthAccount
 
 class TaxReport:
+    """
+    A class for generating tax reports for bank accounts.
+
+    Attributes:
+        tax_rate (float): The tax rate to be applied for the tax calculations.
+        accounts (list): A list of account objects (SavingsAccount, YouthAccount, etc.) for which the tax report will be generated.
+
+    Methods:
+        generate_csv(): Generates a CSV file containing the tax report for all accounts.
+    """
     
     def __init__(self, tax_rate: float, accounts):
+        """
+        Initializes the TaxReport with a specified tax rate and a list of accounts.
+
+        Parameters:
+            tax_rate (float): The tax rate to be used in the tax calculations.
+            accounts (list): A list of account objects for which the tax report will be generated.
+        """
         self.tax_rate = tax_rate
         self.accounts = accounts
 
     def generate_csv(self):
+        """
+        Generates a CSV file containing a tax report for the fiscal year, detailing each account's type, balance, currency, and IBAN. 
+        It also calculates and displays the total wealth across all accounts.
+
+        The report is saved to a specified path on the user's desktop.
+        """
         year = datetime.datetime.now().year
         data = [["Tax Report", f"{year} for fiscal year {year-1}"]]
         total_wealth = 0
@@ -43,6 +66,3 @@ class TaxReport:
             writer.writerows(data)
         
         print(f"CSV file '{csv_file_path}' created successfully.")
-        
-if __name__ == '__main__':
-    pass
