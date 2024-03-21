@@ -66,7 +66,7 @@ class BankApplication:
             #may use already existing method
         elif action == 10:
             tax_report = TaxReport(self.accounts)
-            tax_report.generate()
+            tax_report.generate_csv()
         return True
 
 
