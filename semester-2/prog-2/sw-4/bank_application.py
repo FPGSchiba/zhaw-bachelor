@@ -7,8 +7,9 @@ PROG2 P02 1.2: Bank Application
 """
 import datetime
 
-from classes.youth_account import YouthAccount
-from classes.savings_account import SavingsAccount
+from tax_report import TaxReport
+from youth_account import YouthAccount
+from savings_account import SavingsAccount
 
 
 def print_menu():
@@ -62,10 +63,10 @@ class BankApplication:
             print(self.current_account.withdraw(amount))
         elif action == 9:
             raise NotImplemented("Not Implemented")
-            # TODO: TaxReporting Class with generate Method.
+            #may use already existing method
         elif action == 10:
-            raise NotImplemented("Not Implemented")
-            # TODO: TaxReporting Class with generate Method to CSV.
+            tax_report = TaxReport(self.accounts)
+            tax_report.generate()
         return True
 
 
