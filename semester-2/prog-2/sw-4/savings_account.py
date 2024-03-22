@@ -5,7 +5,7 @@ PROG2 P02 1.1: Comments and prints
 @date: 09.03.2024
 @author: Jann Erhardt, Simone Fabio, Johannes Werder
 """
-from .bank_account import BankAccount
+from bank_account import BankAccount
 
 
 class SavingsAccount(BankAccount):
