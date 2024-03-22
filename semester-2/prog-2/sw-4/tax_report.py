@@ -10,6 +10,7 @@ import csv
 import datetime
 from savings_account import SavingsAccount
 from youth_account import YouthAccount
+from pathlib import Path
 
 
 class TaxReport:
@@ -74,7 +75,8 @@ class TaxReport:
 
         data.append(["Total Wealth", f"{total_wealth}"])
 
-        csv_file_path = f"C:\\Users\\User\\Desktop\\Reports\\tax_report_{year}.csv"
+        csv_file_name = f"tax_report_{year}.csv"
+        csv_file_path = Path.home().joinpath( 'Documents', csv_file_name )
 
         with open(csv_file_path, mode='w', newline='') as file:
             writer = csv.writer(file)
