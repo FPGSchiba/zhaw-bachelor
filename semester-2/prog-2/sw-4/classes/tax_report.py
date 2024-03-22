@@ -10,10 +10,9 @@ import csv
 import datetime
 from savings_account import SavingsAccount
 from youth_account import YouthAccount
+from ..bank_application import BankApplication
 
-class TaxReport:
-    """
-    A class for generating tax reports for bank accounts.
+class TaxReport:"""
 
     Attributes:
         tax_rate (float): The tax rate to be applied for the tax calculations.
@@ -34,13 +33,29 @@ class TaxReport:
         self.tax_rate = tax_rate
         self.accounts = accounts
 
-    def generate_csv(self):
-        """
-        Generates a CSV file containing a tax report for the fiscal year, detailing each account's type, balance, currency, and IBAN. 
-        It also calculates and displays the total wealth across all accounts.
+    def generate(self, bank_app: BankApplication) -> str:
+        if len(bank_app.accounts) >= 1:
+            result = f'The tax report for {datetime.datetime.now().year} for fiscal year: {datetime.datetime.now().year - 1}:\n'
+            for index, account in enumerate(bank_app.accounts):
+                balance = account.retrieve_balance()
+                if isinstance(account, SavingsAccount):
+                    account_type = "Savings Account"
+                elif isinstance(account, YouthAccount):
+                    account_type = "Youth Account"
+                else:
+                    account_type = "Account Type unknown"
+                result = result + f' [{index}] {account_type}: {balance}\n'
+            else:
+                result = 'The Tax Report is not available since there is no available Bankaccount'
+            return result
 
-        The report is saved to a specified path on the user's desktop.
-        """
+
+    def generate_csv(self, bank_app: BankApplication) -> None:
+        if len(bank_app.accounts) == 0:
+            return print("Not enough Data available to generate the tax report")
+
+        #The report is saved to a specified path on the user's desktop.
+
         year = datetime.datetime.now().year
         data = [["Tax Report", f"{year} for fiscal year {year-1}"]]
         total_wealth = 0
@@ -51,7 +66,7 @@ class TaxReport:
             elif isinstance(account, YouthAccount):
                 account_type = "Youth Account"
             else:
-                account_type = "Account Type unkown"
+                account_type = "Account Type unknown"
 
             account_info = [account_type, f"Balance: {account.balance}", f"Currency: {account.currency[0]}", f"IBAN: {account.IBAN}"]
             total_wealth += account.balance
