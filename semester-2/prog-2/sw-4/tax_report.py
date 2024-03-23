@@ -11,10 +11,9 @@ import datetime
 from savings_account import SavingsAccount
 from youth_account import YouthAccount
 
+
 class TaxReport:
     """
-    A class for generating tax reports for bank accounts.
-
     Attributes:
         tax_rate (float): The tax rate to be applied for the tax calculations.
         accounts (list): A list of account objects (SavingsAccount, YouthAccount, etc.) for which the tax report will be generated.
@@ -22,7 +21,7 @@ class TaxReport:
     Methods:
         generate_csv(): Generates a CSV file containing the tax report for all accounts.
     """
-    
+
     def __init__(self, tax_rate: float, accounts):
         """
         Initializes the TaxReport with a specified tax rate and a list of accounts.
@@ -34,15 +33,30 @@ class TaxReport:
         self.tax_rate = tax_rate
         self.accounts = accounts
 
-    def generate_csv(self):
-        """
-        Generates a CSV file containing a tax report for the fiscal year, detailing each account's type, balance, currency, and IBAN. 
-        It also calculates and displays the total wealth across all accounts.
+    def generate(self) -> str:
+        if len(self.accounts) >= 1:
+            result = f'The tax report for {datetime.datetime.now().year} for fiscal year: {datetime.datetime.now().year - 1}:\n'
+            for index, account in enumerate(self.accounts):
+                balance = account.retrieve_balance()
+                if isinstance(account, SavingsAccount):
+                    account_type = "Savings Account"
+                elif isinstance(account, YouthAccount):
+                    account_type = "Youth Account"
+                else:
+                    account_type = "Account Type unknown"
+                result = result + f' [{index}] {account_type}: {balance}\n'
+        else:
+            result = 'The Tax Report is not available since there is no available Bankaccount'
+        return result
 
-        The report is saved to a specified path on the user's desktop.
-        """
+    def generate_csv(self) -> None:
+        if len(self.accounts) == 0:
+            return print("Not enough Data available to generate the tax report")
+
+        # The report is saved to a specified path on the user's desktop.
+
         year = datetime.datetime.now().year
-        data = [["Tax Report", f"{year} for fiscal year {year-1}"]]
+        data = [["Tax Report", f"{year} for fiscal year {year - 1}"]]
         total_wealth = 0
 
         for account in self.accounts:
@@ -51,18 +65,19 @@ class TaxReport:
             elif isinstance(account, YouthAccount):
                 account_type = "Youth Account"
             else:
-                account_type = "Account Type unkown"
+                account_type = "Account Type unknown"
 
-            account_info = [account_type, f"Balance: {account.balance}", f"Currency: {account.currency[0]}", f"IBAN: {account.IBAN}"]
+            account_info = [account_type, f"Balance: {account.balance}", f"Currency: {account.currency[0]}",
+                            f"IBAN: {account.IBAN}"]
             total_wealth += account.balance
             data.append(account_info)
 
         data.append(["Total Wealth", f"{total_wealth}"])
-        
+
         csv_file_path = f"C:\\Users\\User\\Desktop\\Reports\\tax_report_{year}.csv"
-        
+
         with open(csv_file_path, mode='w', newline='') as file:
             writer = csv.writer(file)
             writer.writerows(data)
-        
+
         print(f"CSV file '{csv_file_path}' created successfully.")

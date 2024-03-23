@@ -62,10 +62,10 @@ class BankApplication:
             amount = float(input('  Amount: '))
             print(self.current_account.withdraw(amount))
         elif action == 9:
-            raise NotImplemented("Not Implemented")
-            #may use already existing method
+            tax_report = TaxReport(0.2, self.accounts)
+            print(tax_report.generate())
         elif action == 10:
-            tax_report = TaxReport(self.accounts)
+            tax_report = TaxReport(0.2, self.accounts)
             tax_report.generate_csv()
         return True
 
