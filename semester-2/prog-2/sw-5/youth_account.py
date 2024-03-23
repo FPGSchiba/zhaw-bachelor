@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-PROG2 P02 1.1: Comments and prints
+PROG2 P03 1.2: Currency Exchange rates
 
-@date: 09.03.2024
+@date: 23.03.2024
 @author: Jann Erhardt, Simone Fabio, Johannes Werder
 """
 

@@ -3,7 +3,7 @@
 PROG2 P03: Currency Exchange rates
 
 @date: 23.03.2024
-@author: Jann Erhardt
+@author: Jann Erhardt, Simone Fabio, Johannes Werder
 """
 import requests
 

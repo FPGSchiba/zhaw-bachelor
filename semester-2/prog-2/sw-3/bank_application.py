@@ -62,10 +62,8 @@ class BankApplication:
             print(self.current_account.withdraw(amount))
         elif action == 9:
             raise NotImplemented("Not Implemented")
-            # TODO: TaxReporting Class with generate Method.
         elif action == 10:
             raise NotImplemented("Not Implemented")
-            # TODO: TaxReporting Class with generate Method to CSV.
         return True
 
 
