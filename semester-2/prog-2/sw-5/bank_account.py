@@ -38,10 +38,12 @@ class BankAccount:
         self.current_month, _ = divmod(datetime.datetime.now().second, 10)
         self.current_year = datetime.datetime.now().minute
 
-    def convert_to_currency(self, amount: float):
+    def _convert_to_currency(self, amount: float):
+        # TODO: Simone
         pass
 
-    def convert_from_currency(self, amount: float):
+    def _convert_from_currency(self, amount: float):
+        # TODO: Simone
         pass
 
     def open_account(self) -> bool:

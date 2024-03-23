@@ -34,7 +34,10 @@ class TaxReport:
         self.tax_rate = tax_rate
         self.accounts = accounts
 
-    def generate(self) -> str:
+    def _generate_report(self) -> dict:
+        pass # TODO: Do this: Reusable code here
+
+    def generate(self) -> str:  # TODO: Generate method better
         if len(self.accounts) >= 1:
             result = f'The tax report for {datetime.datetime.now().year} for fiscal year: {datetime.datetime.now().year - 1}:\n'
             for index, account in enumerate(self.accounts):
@@ -45,12 +48,12 @@ class TaxReport:
                     account_type = "Youth Account"
                 else:
                     account_type = "Account Type unknown"
-                result = result + f' [{index}] {account_type}: {balance}\n'
+                result = result + f' [{index}] {account_type}: {balance}\n'  # TODO: Total wealth
         else:
             result = 'The Tax Report is not available since there is no available Bankaccount'
         return result
 
-    def generate_csv(self) -> None:
+    def generate_csv(self) -> None:  # TODO: Generate method better
         if len(self.accounts) == 0:
             return print("Not enough Data available to generate the tax report")
 
@@ -76,10 +79,14 @@ class TaxReport:
         data.append(["Total Wealth", f"{total_wealth}"])
 
         csv_file_name = f"tax_report_{year}.csv"
-        csv_file_path = Path.home().joinpath( 'Documents', csv_file_name )
+        csv_file_path = Path.home().joinpath('Documents', csv_file_name)
 
         with open(csv_file_path, mode='w', newline='') as file:
             writer = csv.writer(file)
             writer.writerows(data)
 
         print(f"CSV file '{csv_file_path}' created successfully.")
+
+
+if __name__ == '__main__':
+    print('Yolo')  # TODO: do this
