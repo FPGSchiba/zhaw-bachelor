@@ -10,6 +10,7 @@ import math
 import random
 import string
 import datetime
+import requests
 
 
 class BankAccount:
@@ -33,18 +34,26 @@ class BankAccount:
         self.IBAN = 'CH' + ''.join(random.choice(string.digits) for _ in range(19))
         self.balance = 0.0
         self.open = True
-        self.currency = 'EUR'
+        self.currency = 'CHF'
         self.interest = 0.001  # More Savings than youth accounts -> defaults to savings
         self.current_month, _ = divmod(datetime.datetime.now().second, 10)
         self.current_year = datetime.datetime.now().minute
-
-    def _convert_to_currency(self, amount: float):
-        # TODO: Simone
-        pass
+        response = requests.get(f'https://api.frankfurter.app/latest?from=CHF')
+        data = response.json()
+        self.currencies = list(data['rates'].keys())
+        self.currencies.append('CHF')
 
     def _convert_from_currency(self, amount: float):
-        # TODO: Simone
-        pass
+        foreign_currency = f'https://api.frankfurter.app/latest?amount={amount}&from={self.currency}&to=CHF'
+        response = requests.get(foreign_currency)
+        currency_data = response.json()
+        return currency_data['rates']['CHF']
+
+    def _convert_to_currency(self, amount: float):
+        from_chf_to_currency = f'https://api.frankfurter.app/latest?amount={amount}&from=CHF&to={self.currency}'
+        response = requests.get(from_chf_to_currency)
+        currency_data = response.json()
+        return currency_data['rates'][self.currency]
 
     def open_account(self) -> bool:
         """
@@ -128,7 +137,7 @@ class BankAccount:
             second_currency = abs((self.balance - main_currency)) * 100
             return f"{main_currency} {self.currency[0]} {second_currency} {self.currency[1]}"
 
-    def change_currency(self, currency: tuple):
+    def change_currency(self, currency: str):
         """
         Changes the currency of the account.
 
@@ -175,7 +184,8 @@ if __name__ == '__main__':
     test_account = BankAccount()
     print(test_account.deposit(1000))
 
-    test_account.change_currency(("Dollar", "Cents"))
+    test_account.change_currency("USD")
+    print(test_account.__getattribute__('_convert_from_currency')(100.5))
     print(test_account.retrieve_balance())
 
     test_account.check_interest()

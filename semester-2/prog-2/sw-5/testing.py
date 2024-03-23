@@ -6,13 +6,16 @@ PROG2 P03: Currency Exchange rates
 @author: Jann Erhardt, Simone Fabio, Johannes Werder
 """
 import requests
+import json
 
 amount = 250.123
-currency = 'CHF'
+currency = 'JPY'
 
 LATEST_API_PATH = f'https://api.frankfurter.app/latest?amount={amount}&from={currency}'
 
 response = requests.get(LATEST_API_PATH)
 data = response.json()
 print(data)
-print(list(data['rates'].keys()))
+print(data['rates'])
+print(data['rates']['CHF'])
+print(data['amount'])
