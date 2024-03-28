@@ -10,6 +10,7 @@ import datetime
 from tax_report import TaxReport
 from youth_account import YouthAccount
 from savings_account import SavingsAccount
+from typing import List, Union
 
 
 def print_menu():
@@ -27,7 +28,7 @@ def print_menu():
 
 
 class BankApplication:
-    def __init__(self, accounts: list[YouthAccount | SavingsAccount], username: str, password: str):
+    def __init__(self, accounts: List[Union[YouthAccount, SavingsAccount]], username: str, password: str):
         self.accounts = accounts
         self.current_account = None
         self.user = (username, password)
