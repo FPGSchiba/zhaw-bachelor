@@ -35,51 +35,53 @@ class TaxReport:
         self.accounts = accounts
 
     def _generate_report(self) -> dict:
-        pass # TODO: Do this: Reusable code here
-
-    def generate(self) -> str:  # TODO: Generate method better
-        if len(self.accounts) >= 1:
-            result = f'The tax report for {datetime.datetime.now().year} for fiscal year: {datetime.datetime.now().year - 1}:\n'
-            for index, account in enumerate(self.accounts):
-                balance = account.retrieve_balance()
-                if isinstance(account, SavingsAccount):
-                    account_type = "Savings Account"
-                elif isinstance(account, YouthAccount):
-                    account_type = "Youth Account"
-                else:
-                    account_type = "Account Type unknown"
-                result = result + f' [{index}] {account_type}: {balance}\n'  # TODO: Total wealth
-        else:
-            result = 'The Tax Report is not available since there is no available Bankaccount'
-        return result
-
-    def generate_csv(self) -> None:  # TODO: Generate method better
-        if len(self.accounts) == 0:
-            return print("Not enough Data available to generate the tax report")
-
-        # The report is saved to a specified path on the user's desktop.
-
-        year = datetime.datetime.now().year
-        data = [["Tax Report", f"{year} for fiscal year {year - 1}"]]
+        report_data = {}
         total_wealth = 0
-
-        for account in self.accounts:
+        
+        for index, account in enumerate(self.accounts):
+            balance = account.retrieve_balance()
             if isinstance(account, SavingsAccount):
                 account_type = "Savings Account"
             elif isinstance(account, YouthAccount):
                 account_type = "Youth Account"
             else:
                 account_type = "Account Type unknown"
-
-            account_info = [account_type, f"Balance: {account.balance}", f"Currency: {account.currency[0]}",
-                            f"IBAN: {account.IBAN}"]
+            report_data[index] = {'Account Type': account_type, 'Balance': balance}
             total_wealth += account.balance
-            data.append(account_info)
+        
+        report_data['Total Wealth'] = total_wealth
+        return report_data
+    
+    def generate(self) -> str:
+        report_data = self._generate_report()
+        result = f'The tax report for {datetime.datetime.now().year} for fiscal year: {datetime.datetime.now().year - 1}:\n'
 
-        data.append(["Total Wealth", f"{total_wealth}"])
+        for index, data in report_data.items():
+            if index == 'Total Wealth':
+                result += f"Total Wealth: {data}\n"
+            else:
+                result += f' [{index}] {data["Account Type"]}: {data["Balance"]}\n'
+        return result
 
+    def generate_csv(self) -> None:
+        report_data = self._generate_report()
+        year = datetime.datetime.now().year
+        data = [["Tax Report", f"{year} for fiscal year {year - 1}"]]
+        
         csv_file_name = f"tax_report_{year}.csv"
         csv_file_path = Path.home().joinpath('Documents', csv_file_name)
+        
+        if len(self.accounts) == 0:
+            return print("Not enough Data available to generate the tax report")
+
+        # The report is saved to a specified path on the user's desktop.
+
+        for index, (key, value) in enumerate(report_data.items()):
+            if key == 'Total Wealth':
+                account_info = ['Total Wealth', f"{value}"]
+            else:
+                account_info = [value["Account Type"], f"Balance: {value['Balance']}"]
+            data.append(account_info)
 
         with open(csv_file_path, mode='w', newline='') as file:
             writer = csv.writer(file)
@@ -89,4 +91,4 @@ class TaxReport:
 
 
 if __name__ == '__main__':
-    print('Yolo')  # TODO: do this
+    print('Yolo')  # TODO: do this like how?
