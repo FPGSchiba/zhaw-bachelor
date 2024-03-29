@@ -45,7 +45,7 @@ class SavingsAccount(BankAccount):
         amount_in_chf = self._convert_from_currency(amount)
 
         self.check_interest()
-        # Check if the withdrawal will cause an overdraft and apply fees if that happens
+        # Check if the withdrawal will cause an overdraft and apply fees if that should happens
         if self.balance - amount_in_chf < 0:
             overdraft_amount = amount_in_chf - self.balance
             additional_charge = overdraft_amount * self.overdraft_fee_rate

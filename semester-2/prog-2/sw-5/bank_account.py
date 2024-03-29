@@ -42,6 +42,8 @@ class BankAccount:
         data = response.json()
         self.currencies = list(data['rates'].keys())
         self.currencies.append('CHF')
+        self.last_deposit_amount = 0.0
+        self.last_deposit_currency = self.currency
 
     def _convert_from_currency(self, amount: float):
         foreign_currency = f'https://api.frankfurter.app/latest?amount={amount}&from={self.currency}&to=CHF'
@@ -81,31 +83,58 @@ class BankAccount:
         elif not self.open:
             return False
 
-    def deposit(self, amount: float) -> str:
+    def deposit(self, amount: float, currency: str = None) -> str:
         """
         Deposits the given amount into the account.
 
         Args:
             amount (float): The amount to deposit.
+            currency (str): The currency of the amount which is being deposited. If None,
+                            it assumes account's currency.
 
         Returns:
             str: A string representation of the updated balance.
         """
-        # TODO: Currency Exchange
+        # TODO: Currency Exchange (I TRIEEED AND I GAVE UP, no idea how to do retrieve balance, I deleted my progress
+        #  fully since it made noooo sense at all)
         if not self.open:
             return "Account is closed."
         self.check_interest()
-        if self.balance + amount > 100000:
+
+        # Deterimne the amount to be added to the balance, converting if necessary
+        converted_amount = amount
+        if currency and currency != self.currency:
+            if currency == 'CHF':
+                converted_amount = self._convert_to_currency(amount)
+            else:
+                amount_in_chf = self._convert_from_currency(amount)
+                converted_amount = amount_in_chf if self.currency == 'CHF' \
+                    else self._convert_to_currency(amount_in_chf)
+
+        # Check if the deposit would cause the account balance to exceed the limit of the accunt
+        if self.balance + converted_amount > 100000:
+            # If so, return the current balance without making the deposit
             return self.retrieve_balance()
-        self.balance += amount
+
+        # Otherwise, proceed with updating the balance
+        self.balance += converted_amount
+
+        # Update tracking of the last deposit
+        self.last_deposit_amount = converted_amount
+        self.last_deposit_currency = currency if currency \
+            else self.currency
+
+        # Return the updated balance
         return self.retrieve_balance()
 
-    def withdraw(self, amount: float) -> str:
+    def withdraw(self, amount: float, currency: str = None) -> str:
         """
         Withdraws the given amount from the account.
 
         Args:
             amount (float): The amount to withdraw.
+            currency (str): The currency of the amount which is being deposited. If None,
+                            it assumes account's currency.
 
         Returns:
             str: A string representation of the updated balance.
@@ -113,6 +142,10 @@ class BankAccount:
         # TODO: Currency Exchange
         if not self.open:
             return "Account is closed."
+
+        if currency and currency != self.currency:
+            amount = self._convert_to_currency(amount) if currency == 'CHF' \
+                else self._convert_from_currency(amount)
         if self.balance - amount <= 0:
             return self.retrieve_balance()
         self.balance -= amount
