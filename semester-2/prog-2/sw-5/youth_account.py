@@ -77,15 +77,19 @@ class YouthAccount(BankAccount):
         Returns:
             str: A message indicating the outcome of the withdraw operation.
         """
-        # TODO: Currency convert
+        converted_amount = amount
+        if self.currency != 'CHF':
+            converted_amount = self._convert_to_currency(amount)
+
         self.check_interest()
         if datetime.datetime.now().month != self.current_month:
             self.withdrawn_this_month = 0
             self.current_month, _ = divmod(datetime.datetime.now().second, 10)
-        if self.withdrawn_this_month + amount > self.monthly_withdraw_limit:
+        if self.withdrawn_this_month + converted_amount > self.monthly_withdraw_limit:
             return "Withdraw limit exceeded for this month."
         else:
-            self.withdrawn_this_month += amount
+            self.withdrawn_this_month += converted_amount
+            # Super method already handles Currency conversion, so this is fine.
             return super().withdraw(amount)
 
     def __repr__(self):
@@ -104,5 +108,11 @@ class YouthAccount(BankAccount):
 
 if __name__ == '__main__':
     account = YouthAccount(datetime.date(2000, 1, 1))
-
+    account.deposit(1000)
     print(account)
+    account.change_currency('USD')
+    account.deposit(100)
+    print(account)
+    account.withdraw(100)
+    print(account.retrieve_balance())
+    print(account.balance)

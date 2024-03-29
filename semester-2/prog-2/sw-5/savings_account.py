@@ -37,32 +37,28 @@ class SavingsAccount(BankAccount):
             str: A message indicating the outcome of the withdrawal operation, including the current balance
             and any applicable overdraft fees.
         """
-        # TODO: currency convert( I tried, there might be an issue at the end with amount?)
-
         if not self.open:
             return "Account is closed."
-
-        amount_in_chf = self._convert_from_currency(amount)
+        converted_amount = amount
+        if self.currency != 'CHF':
+            converted_amount = self._convert_from_currency(amount)
 
         self.check_interest()
         # Check if the withdrawal will cause an overdraft and apply fees if that should happens
-        if self.balance - amount_in_chf < 0:
-            overdraft_amount = amount_in_chf - self.balance
+        if self.balance - converted_amount < 0:
+            overdraft_amount = converted_amount - self.balance
             additional_charge = overdraft_amount * self.overdraft_fee_rate
-            total_amount = amount_in_chf + additional_charge
+            total_amount = converted_amount + additional_charge
             self.balance -= total_amount
-            """
-            Converting additional charge back to the account currency
-            """
-            additional_charge_in_account_currency = self._convert_to_currency(additional_charge)
+            # Converting additional charge back to the account currency
+            if self.currency != 'CHF':
+                additional_charge_in_account_currency = self._convert_to_currency(additional_charge)
+                return (f"Withdrawal including overdraft fee completed. {self.retrieve_balance()} Including "
+                        f"overdraft fee of {additional_charge_in_account_currency} {self.currency}")
             return (f"Withdrawal including overdraft fee completed. {self.retrieve_balance()} Including "
-                    f"overdraft fee of {additional_charge_in_account_currency} {self.currency[0]}")
+                    f"overdraft fee of {additional_charge} CHF")
         else:
-            """
-            Withdraw the amount which has been converted to CHF &
-            convert amount from CHF back to previous currency before withdrawing the amount  
-            """
-            amount = self._convert_from_currency(amount_in_chf)
+            # The super withdraw already handles other currencies, so this is enough.
             return super().withdraw(amount)
 
     def __repr__(self):
@@ -74,4 +70,9 @@ class SavingsAccount(BankAccount):
 
 if __name__ == '__main__':
     savingsAccount = SavingsAccount()
+    savingsAccount.deposit(1000)
+    savingsAccount.withdraw(100)
+    savingsAccount.change_currency('USD')
+    savingsAccount.deposit(100)
+    print(savingsAccount.retrieve_balance())
     print(savingsAccount.balance)
