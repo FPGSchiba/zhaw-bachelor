@@ -17,7 +17,6 @@ TRANSLATIONS = {
     "Ã¼": 'ue'
 }
 
-
 def get_raw_data():
     waiting_time = 2
     counter = 0
@@ -57,7 +56,9 @@ def calculate_bom(data: dict):
         'materials': materials,
         'cost': values
     })
-    data.loc[len(data.index)] = ['Sum', data.cost.sum()]
+    separator = pd.DataFrame([["---", "---"]], columns=["materials", "cost"])
+    data = pd.concat([data, separator], ignore_index=True)
+    data.loc[len(data.index)] = ['Sum', data[:-1].cost.replace("---", 0).sum()]
     print(data)
 
 
