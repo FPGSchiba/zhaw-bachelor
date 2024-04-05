@@ -50,6 +50,7 @@ def clean_data(data: dict):
 
 
 def calculate_bom(data: dict):
+    data = dict(sorted(data.items()))
     materials = list(data.keys())
     values = [item for _, item in data.items()]
     data = pd.DataFrame({
