@@ -17,6 +17,7 @@ TRANSLATIONS = {
     "Ã¼": 'ue'
 }
 
+
 def get_raw_data():
     waiting_time = 2
     counter = 0
@@ -43,7 +44,7 @@ def clean_data(data: dict):
                 key = key.replace(old, new)
             if isinstance(value, str):
                 value = value.replace(old, new)
-        if isinstance(value, int) or isinstance(value, float):
+        if isinstance(value, (int, float)):
             new_data[key] = abs(value)
 
     return new_data
