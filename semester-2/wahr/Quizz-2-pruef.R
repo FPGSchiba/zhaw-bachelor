@@ -19,4 +19,10 @@ for (i in 1:nsim) {
 mean(num_cought_fishes)
 
 # ---- Aufgabe 4 ----
-ppois(4, 1.2)
+1 - ppois(4, 1.2)
+
+# ---- Aufgabe 5 ----
+n <- 10
+p <- 0.17
+
+10 * 0.17

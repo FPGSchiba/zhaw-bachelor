@@ -39,18 +39,15 @@ class Download:
             file_mod_time = datetime.fromtimestamp(os.stat(self.cache_path).st_mtime)
             current_time = datetime.now()
             if (current_time - file_mod_time).total_seconds() < self.timeout:
-                print('Loading data from cache. HRHR')
                 df = pd.read_csv(self.cache_path)
                 if 'Timestamp' in df.columns:
                     df['Month'] = pd.to_datetime(df['Timestamp']).dt.month_name()
                     df['Weekday'] = pd.to_datetime(df['Timestamp']).dt.day_name()
                 else:
                     print('Warning: Timestamp column not found in the cached data.')
-                print(df.head())
                 return df
 
         # If no valid cache, download the data
-        print('Downloading data. ROFL')
         response = requests.get(self.url)
         if response.status_code == 200:
             with open(self.cache_path, 'wb') as file:
@@ -61,7 +58,6 @@ class Download:
                 df['Weekday'] = pd.to_datetime(df['Timestamp']).dt.day_name()
             else:
                 print('Warning: Timestamp column not found in the cached data.')
-            print(df.head())
             return df
         else:
             print('Failed to download data. LOL')
@@ -90,7 +86,6 @@ class DataAnalyzer:
         Calculates and prints statistical data of the DataFrame.
         """
         stats = self.dataframe.describe()
-        print(stats)
 
     def visualize_data(self, column_name):
         """
@@ -157,7 +152,6 @@ def main():
     if df is not None:
         analyzer = DataAnalyzer(df)
         df_aggregated = analyzer.aggregate_data()
-        print(df_aggregated)
         analyzer.plot_weekday_averages(df_aggregated)
         df_filtered = df.iloc[:, :2]
         df_filtered.columns = ['In', 'Out']
