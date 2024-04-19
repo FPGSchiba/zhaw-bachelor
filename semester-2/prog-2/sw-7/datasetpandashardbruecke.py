@@ -19,10 +19,13 @@ class Download:
             if (current_time - file_mod_time).total_seconds() < self.timeout:
                 print('Loading data from cache. HRHR')
                 df = pd.read_csv(self.cache_path)
-                df['Month'] = pd.to_datetime(df['Timestamp']).dt.month_name()
-                df['Weekday'] = pd.to_datetime(df['Timestamp']).dt.day_name()
+                if 'Timestamp' in df.columns:
+                    df['Month'] = pd.to_datetime(df['Timestamp']).dt.month_name()
+                    df['Weekday'] = pd.to_datetime(df['Timestamp']).dt.day_name()
+                else:
+                    print('Warning: Timestamp column not found in the cached data.')
                 print(df.head())
-                return pd.read_csv(self.cache_path)
+                return df
 
         # If no valid cache, download the data
         print('Downloading data. ROFL')
@@ -31,10 +34,13 @@ class Download:
             with open(self.cache_path, 'wb') as file:
                 file.write(response.content)
             df = pd.read_csv(self.cache_path)
-            df['Month'] = pd.to_datetime(df['Timestamp']).dt.month_name()
-            df['Weekday'] = pd.to_datetime(df['Timestamp']).dt.day_name()
+            if 'Timestamp' in df.columns:
+                df['Month'] = pd.to_datetime(df['Timestamp']).dt.month_name()
+                df['Weekday'] = pd.to_datetime(df['Timestamp']).dt.day_name()
+            else:
+                print('Warning: Timestamp column not found in the cached data.')
             print(df.head())
-            return pd.read_csv(self.cache_path)
+            return df
         else:
             print('Failed to download data. LOL')
             return None
@@ -61,6 +67,23 @@ class DataAnalyzer:
         else:
             print(f'Column {column_name} does not exist in the dataframe. MEGALOL')
 
+    def aggregate_data(self):
+        aggregated = self.dataframe.groupby('Weekday').agg({'In': 'sum', 'Out': 'sum'}).reset_index()
+        return aggregated
+
+    def plot_weekday_averages(self, df_aggregated):
+        df_aggregated['Total'] = df_aggregated['In'] + df_aggregated['Out']
+        df_sorted = df_aggregated.sort_values(by='Total', ascending=False)
+        df_sorted = df_sorted.drop(columns=['Total'])
+        ax = df_sorted.plot(x='Weekday', kind='bar', stacked=True)
+        ax.set_title('Summe von Ein- und Aussteiger pro Wochentag')
+        ax.set_xlabel('Wochentag')
+        ax.set_ylabel('Anzahl')
+        ax.legend(['Einsteiger', 'Aussteiger'])
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        plt.show()
+
 
 def main():
     url = 'https://data.stadt-zuerich.ch/dataset/vbz_frequenzen_hardbruecke/download/frequenzen_hardbruecke_2024.csv'
@@ -69,10 +92,13 @@ def main():
     df = downloader.fetching_data()
 
     if df is not None:
-        # Filter for "Einsteiger" and "Aussteiger"
-        df_filtered = df.iloc[:, :2]
+        analyzer = DataAnalyzer(df)
+        df_aggregated = analyzer.aggregate_data()
+        print(df_aggregated)
+        analyzer.plot_weekday_averages(df_aggregated)
+        # Filter for "Einsteiger" and "Aussteiger" ##Funktion dafür machen, nicht im main()
+        df_filtered = df.iloc[:, :2]  ## über den spaltennamen ausgeben
         df_filtered.columns = ['In', 'Out']
-
         analyzer = DataAnalyzer(df_filtered)
         analyzer.calculate_statistics()
         analyzer.visualize_data('In')
