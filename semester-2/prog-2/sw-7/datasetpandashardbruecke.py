@@ -69,6 +69,8 @@ class DataAnalyzer:
 
     def aggregate_data(self):
         aggregated = self.dataframe.groupby('Weekday').agg({'In': 'sum', 'Out': 'sum'}).reset_index()
+        aggregated['In'] = aggregated['In'] / 1000
+        aggregated['Out'] = aggregated['Out'] / 1000
         return aggregated
 
     def plot_weekday_averages(self, df_aggregated):
@@ -76,7 +78,7 @@ class DataAnalyzer:
         df_sorted = df_aggregated.sort_values(by='Total', ascending=False)
         df_sorted = df_sorted.drop(columns=['Total'])
         ax = df_sorted.plot(x='Weekday', kind='bar', stacked=True)
-        ax.set_title('Summe von Ein- und Aussteiger pro Wochentag')
+        ax.set_title('Summe von Ein- und Aussteiger pro Wochentag (in Tausend)')
         ax.set_xlabel('Wochentag')
         ax.set_ylabel('Anzahl')
         ax.legend(['Einsteiger', 'Aussteiger'])
