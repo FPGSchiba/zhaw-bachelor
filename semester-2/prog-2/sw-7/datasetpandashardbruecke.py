@@ -10,7 +10,7 @@ class Download:
     Handles the downloading and caching of data from a specified URL.
 
     Attributes:
-        url (str): The URL to fetch data from.
+        __url (str): The URL to fetch data from.
         cache_path (str): Path to the cache file where data is stored.
         timeout (int): Time in seconds to consider the cached data as valid.
     """
@@ -24,7 +24,7 @@ class Download:
             cache_path (str, optional): File path for storing the downloaded data. Defaults to 'cache.csv'.
             timeout (int, optional): Timeout in seconds for the cache validity. Defaults to 600.
         """
-        self.url = url
+        self.__url = url
         self.cache_path = cache_path
         self.timeout = timeout
 
@@ -48,7 +48,8 @@ class Download:
                 return df
 
         # If no valid cache, download the data
-        response = requests.get(self.url)
+        response = requests.get(self.__url)
+
         if response.status_code == 200:
             with open(self.cache_path, 'wb') as file:
                 file.write(response.content)
@@ -152,6 +153,7 @@ def main():
     if df is not None:
         analyzer = DataAnalyzer(df)
         df_aggregated = analyzer.aggregate_data()
+        print(df_aggregated)
         analyzer.plot_weekday_averages(df_aggregated)
         df_filtered = df.iloc[:, :2]
         df_filtered.columns = ['In', 'Out']
