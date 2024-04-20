@@ -37,3 +37,19 @@ qweibull(0.632, shape = 2.2, scale = 8.7)
 mean(rweibull(100000, shape=2.2, scale=8.7))
 
 8.7 * gamma(1+1/2.2)
+# ---- Aufgabe 3 ----
+# A
+# Gamma
+
+# B
+x <- seq(0, 800, 0.01)
+plot(x, dgamma(x, shape = 2, rate=1/100), type='l')
+
+# C
+2/(1/100)
+
+# D
+pgamma(50, shape=2, rate=1/100)
+
+# E
+qgamma(0.1, shape=2, rate=1/100)
