@@ -11,6 +11,7 @@ import pandas as pd
 from datetime import datetime
 import csv
 import numpy as np
+import folium
 
 # Testing API
 
@@ -235,11 +236,13 @@ for station in stations:
 
 '''
 
+df = pd.read_csv('station_reachability.csv', sep=';', encoding='latin1')
 
 # Dataframe enrichment
 
 '''
 ===================================================================================================
+
 
 def haversine(lon1, lat1, lon2, lat2):
     lon1, lat1, lon2, lat2 = map(np.radians, [lon1, lat1, lon2, lat2])
@@ -251,14 +254,41 @@ def haversine(lon1, lat1, lon2, lat2):
     meters = 6370 * c
     return meters
 
-
-df = pd.read_csv('station_reachability.csv', sep=';', encoding='latin1')
-
 df['distance_km'] = df.apply(
     lambda row: np.round(haversine(row['from_lon'], row['from_lat'], row['to_lon'], row['to_lat'])), axis=1).astype(
     float)
+    
+'''
 
 print(df.head())
 
-'''
+# Plotting locations to Map
 
+'''
+===================================================================================================
+
+unique_stations_from = df.groupby('from').agg({'from_lat': 'mean', 'from_lon': 'mean'}).reset_index()
+
+unique_stations_to = df.groupby('to').agg({'to_lat': 'mean', 'to_lon': 'mean'}).reset_index()
+
+# Create a map object. Center it around the first 'from' station's coordinates for simplicity.
+if not unique_stations_from.empty:
+    m = folium.Map(location=[unique_stations_from['from_lat'].iloc[0], unique_stations_from['from_lon'].iloc[0]], zoom_start=10)
+else:
+    m = folium.Map(location=[0, 0], zoom_start=2)  # Default to a world view if no valid data
+
+# Add markers to the map for each unique 'from' station
+for idx, row in unique_stations_from.iterrows():
+    folium.Marker([row['from_lat'], row['from_lon']], popup=f"From: {row['from']}").add_to(m)
+
+# Add markers to the map for each unique 'to' station
+for idx, row in unique_stations_to.iterrows():
+    folium.Marker([row['to_lat'], row['to_lon']], popup=f"To: {row['to']}").add_to(m)
+
+# Save the map to an HTML file
+map_file = "stations_map.html"
+m.save(map_file)
+
+print(f"Map has been saved to {map_file}. You can now open this file in any web browser to view the map.")
+
+'''
