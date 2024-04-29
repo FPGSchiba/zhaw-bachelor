@@ -2,6 +2,7 @@ import requests
 import pandas as pd
 from datetime import datetime
 import csv
+import numpy as np
 
 # Testing API
 
@@ -146,6 +147,9 @@ for station in stations:
 
 # Testing Data handling
 
+'''
+===================================================================================================
+
 # List of target stations
 stations = [
     "Basel", "Geneva", "Lausanne", "Zürich", "Bern", "Lucerne", "Lugano", "Biel/Bienne", "Thun", "Köniz",
@@ -157,7 +161,7 @@ stations = [
 ]
 
 # Home location
-home_location = "Nancy"
+home_location = "Gland"
 
 
 def check_connection(home, destination):
@@ -221,6 +225,32 @@ for station in stations:
     }
     log_data(filename, data)
 
-# Home Location-Validation 30 von 50 Stationen aus Liste müssen anfahrbar sein
+'''
 
+
+# Dataframe enrichment
+
+'''
+===================================================================================================
+
+def haversine(lon1, lat1, lon2, lat2):
+    lon1, lat1, lon2, lat2 = map(np.radians, [lon1, lat1, lon2, lat2])
+    # Haversine
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = np.sin(dlat / 2) ** 2 + np.cos(lat1) * np.cos(lat2) * np.sin(dlon / 2) ** 2
+    c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
+    meters = 6370 * c
+    return meters
+
+
+df = pd.read_csv('station_reachability.csv', sep=';', encoding='latin1')
+
+df['distance_km'] = df.apply(
+    lambda row: np.round(haversine(row['from_lon'], row['from_lat'], row['to_lon'], row['to_lat'])), axis=1).astype(
+    float)
+
+print(df.head())
+
+'''
 
