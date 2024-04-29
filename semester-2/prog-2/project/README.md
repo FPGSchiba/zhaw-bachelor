@@ -4,6 +4,10 @@
 
 ![Project Architecture](Projekt-Aufteilung-Architektur.jpg)
 
+### APIs
+
+ * Google Maps API
+
 ### Parts
 
 * Comm-Interface
