@@ -257,7 +257,8 @@ def haversine(lon1, lat1, lon2, lat2):
 df['distance_km'] = df.apply(
     lambda row: np.round(haversine(row['from_lon'], row['from_lat'], row['to_lon'], row['to_lat'])), axis=1).astype(
     float)
-    
+   
+=================================================================================================== 
 '''
 
 print(df.head())
@@ -266,7 +267,6 @@ print(df.head())
 
 '''
 ===================================================================================================
-
 unique_stations_from = df.groupby('from').agg({'from_lat': 'mean', 'from_lon': 'mean'}).reset_index()
 
 unique_stations_to = df.groupby('to').agg({'to_lat': 'mean', 'to_lon': 'mean'}).reset_index()
@@ -291,4 +291,62 @@ m.save(map_file)
 
 print(f"Map has been saved to {map_file}. You can now open this file in any web browser to view the map.")
 
+===================================================================================================
+'''
+
+# Sorting (lookup code on teams)
+
+'''
+def swap_tuples(elements, index_from, index_to):
+    elements[index_from], elements[index_to] = elements[index_to], elements[index_from]
+    return elements
+'''
+
+
+#Check if > 30 Stations are reachable
+
+'''
+===================================================================================================
+
+def check_connection(home, destination):
+    url = "http://transport.opendata.ch/v1/connections"
+    params = {'from': home, 'to': destination}
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        data = response.json()
+        return len(data.get('connections', [])) > 0
+    else:
+        print(f"Error querying {destination}: {response.status_code}")
+        return False
+
+
+def count_reachable_stations(home_location, stations):
+    reachable_count = 0
+    for station in stations:
+        if check_connection(home_location, station):
+            reachable_count += 1
+    return reachable_count
+
+
+stations = [
+    "Basel", "Geneva", "Lausanne", "Zürich", "Bern", "Lucerne", "Lugano", "Biel/Bienne", "Thun", "Köniz",
+    "La Chaux-de-Fonds", "Fribourg", "Schaffhausen", "Chur", "Neuchâtel", "Sion", "Uster", "Emmen", "Lancy",
+    "Yverdon-les-Bains",
+    "Strasbourg", "Mulhouse", "Annecy", "Thonon-les-Bains", "Annemasse", "Chambéry", "Saint-Julien-en-Genevois",
+    "Bellegarde-sur-Valserine",
+    "Évian-les-Bains", "Montbéliard", "Belfort", "Besançon", "Pontarlier", "Dijon", "Bourg-en-Bresse",
+    "Lyon", "Grenoble", "Valence", "Thionville", "Metz", "Nancy", "Colmar", "Lons-le-Saunier", "Vienne",
+    "Chalon-sur-Saône",
+    "Martigny", "Verbier", "Montreux", "Vevey", "Gland"
+]
+
+home_station = input("Please enter your home location: ")
+
+reachable_count = count_reachable_stations(home_station, stations)
+print(f"Number of stations reachable from {home_station}: {reachable_count}")
+
+if reachable_count > 30:
+    print("More than 30 stations are reachable.")
+else:
+    print("30 or fewer stations are reachable.")
 '''
