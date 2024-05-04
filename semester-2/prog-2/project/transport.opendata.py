@@ -264,8 +264,6 @@ print(df.head())
 
 # Plotting locations to Map
 
-'''
-===================================================================================================
 
 unique_stations_from = df.groupby('from').agg({'from_lat': 'mean', 'from_lon': 'mean'}).reset_index()
 
@@ -292,3 +290,13 @@ m.save(map_file)
 print(f"Map has been saved to {map_file}. You can now open this file in any web browser to view the map.")
 
 '''
+
+
+
+# Sorting (lookup code on teams)
+
+def swap_tuples(elements, index_from, index_to):
+    elements[index_from], elements[index_to] = elements[index_to], elements[index_from]
+    return elements
+'''
+
