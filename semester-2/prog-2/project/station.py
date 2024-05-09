@@ -32,4 +32,42 @@ def haversine(lon1, lat1, lon2, lat2):
     meters = 6370 * c
     return meters
     
-'''
+    '''
+    import math
+    class Station:
+    def __init__(self, station_name: str, coordinates: tuple[float, float]):
+        self.name = station_name
+        self.geo_loc = coordinates  # Coordinates are now provided during instantation
+        self.__data = {}
+ 
+    def distance_to(self, station: 'Station') -> float:
+        # Haversine formula to calculate the distance between two geo-locations
+        lat1, lon1 = self.geo_loc
+        lat2, lon2 = station.geo_loc
+ 
+        # Earth radius in kilometers
+        R = 6371.0
+ 
+        # Converting degrees to radians
+        phi1, phi2 = math.radians(lat1), math.radians(lat2)
+        delta_phi = math.radians(lat2 - lat1)
+        delta_lambda = math.radians(lon2 - lon1)
+ 
+        # Haversine formula
+        a = math.sin(delta_phi / 2)**2 + math.cos(phi1) * math.cos(phi2) * math.sin(delta_lambda / 2)**2
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+ 
+        distance = R * c
+        return distance
+ 
+# Coordinates for Zurich Main Station and Hamburg
+zurich_coordinates = (47.378177, 8.540192)  # Zurich Main Station Dummy Coord
+hamburg_coordinates = (53.551086, 9.993682)  # Hamburg Dummy Coord
+ 
+# Create Station instances
+zurich_main_station = Station("Zurich Main Station", zurich_coordinates)
+hamburg_station = Station("Hamburg", hamburg_coordinates)
+ 
+# Calculate the distance
+distance = zurich_main_station.distance_to(hamburg_station)
+print(f"Distance from {zurich_main_station.name} to {hamburg_station.name} is {distance:.2f} km")
