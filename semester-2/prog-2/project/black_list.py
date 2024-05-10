@@ -8,7 +8,7 @@ PROG2 P05: Train Journey Application
 
 class Blacklist:
     # Prio: 4
-    # @John
+    # @Simi
     def __init__(self):
         self.file_location = "./test.json"
 

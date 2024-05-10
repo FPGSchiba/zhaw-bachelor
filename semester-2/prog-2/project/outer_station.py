@@ -12,6 +12,6 @@ from home_station import HomeStation
 
 class OuterStation(Station):
     # Prio: 2
-    # @Simone
+    # @John
     def is_reachable(self, home_station: HomeStation):
         pass
