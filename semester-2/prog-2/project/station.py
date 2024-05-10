@@ -6,47 +6,21 @@ PROG2 P05: Train Journey Application
 @author: Jann Erhardt, Johannes Werder, Fabio Simone
 """
 
-'''
+import math
+import requests
+
+
 class Station:
-    # Prio: 1
-    # @Simone
-    def __init__(self, station_name: str):
-        # TODO: Request Openstreet Data and save data to class
-        self.name = ""
-        self.geo_loc = (0, 0)
-        self.__data = {}
+    def __init__(self):
+        self.geo_loc = None
 
-    def distance_to(self, station: Station):
-        pass
-
-
-#Haversine distance calculation
-
-def haversine(lon1, lat1, lon2, lat2):
-    lon1, lat1, lon2, lat2 = map(np.radians, [lon1, lat1, lon2, lat2])
-    # Haversine
-    dlon = lon2 - lon1
-    dlat = lat2 - lat1
-    a = np.sin(dlat / 2) ** 2 + np.cos(lat1) * np.cos(lat2) * np.sin(dlon / 2) ** 2
-    c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
-    meters = 6370 * c
-    return meters
-    
-
-'''
-    import math
-    import requests
-
-    class Station:
-        def __init__(self):
-            self.geo_loc = None
-
-
-def __init__(self, station_name: str, coordinates: tuple[float, float]):
+    def __init__(self, station_name: str, coordinates: tuple[float, float]):
         self.name = station_name
+        # TODO: should not be the case
+        # Use this: https://nominatim.org/release-docs/latest/api/Search/#result-restriction
+        # with `countrycodes` as EU countries and `layers` as railway
         self.geo_loc = coordinates  # Coordinates are now provided during instanzierung
         self.__data = {}
-
 
     def fetch_station_data(self, name: str) -> Tuple[float, float]:
         # Base URL for Nominatim API
@@ -70,35 +44,36 @@ def __init__(self, station_name: str, coordinates: tuple[float, float]):
         except requests.RequestException as e:
             print(f"Failed to fetch data for {name}: {e}")
             return 0, 0  # Return a default location in case of any failure
- 
+
     def distance_to(self, station: 'Station') -> float:
         # Haversine formula to calculate the distance between two geo-locations
         lat1, lon1 = self.geo_loc
         lat2, lon2 = station.geo_loc
- 
+
         # Earth radius in kilometers
         R = 6371.0
- 
+
         # Converting degrees to radians
         phi1, phi2 = math.radians(lat1), math.radians(lat2)
         delta_phi = math.radians(lat2 - lat1)
         delta_lambda = math.radians(lon2 - lon1)
- 
+
         # Haversine formula
-        a = math.sin(delta_phi / 2)**2 + math.cos(phi1) * math.cos(phi2) * math.sin(delta_lambda / 2)**2
+        a = math.sin(delta_phi / 2) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(delta_lambda / 2) ** 2
         c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
- 
+
         distance = R * c
         return distance
- 
+
+
 # Coordinates for Zurich Main Station and Hamburg
 zurich_coordinates = (47.378177, 8.540192)  # Zurich Main Station Dummy Coord
 hamburg_coordinates = (53.551086, 9.993682)  # Hamburg Dummy Coord
- 
+
 # Create Station instances
 zurich_main_station = Station()
 hamburg_station = Station()
- 
+
 # Calculate the distance
 distance = zurich_main_station.distance_to(hamburg_station)
 print(f"Distance from {zurich_main_station.name} to {hamburg_station.name} is {distance:.2f} km")
