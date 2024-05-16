@@ -8,6 +8,19 @@ PROG2 P05: Train Journey Application
 
 import requests
 import math
+import random
+
+user_agent_list = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36",
+    "Mozilla/5.0 (iPad; CPU OS 15_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/104.0.5112.99 Mobile/15E148 Safari/604.1"
+]
+reffer_list = [
+    'https://stackoverflow.com/',
+    'https://twitter.com/',
+    'https://www.google.co.in/',
+    'https://gem.gov.in/'
+]
 
 
 class Station:
@@ -21,16 +34,27 @@ class Station:
         """Fetches data from OpenStreetMap and stores it in the class."""
         base_url = "https://nominatim.openstreetmap.org/search"
         # List of EU country codes to restrict the search, do you want it like this?
-        eu_country_codes = "AT,BE,BG,HR,CY,CZ,DK,EE,FI,FR,DE,GR,HU,IE,IT,LV,LT,LU,MT,NL,PL,PT,RO,SK,SI,ES,SE"
+        eu_country_codes = "AT,BE,BG,HR,CH,CY,CZ,DK,EE,FI,FR,DE,GR,HU,IE,IT,LV,LT,LU,MT,NL,PL,PT,RO,SK,SI,ES,SE"
         params = {
             "q": name,
             "format": "json",
             "limit": 1,
             "countrycodes": eu_country_codes,
-            "layers": "railway"  # Restrictijng search to railway stations
+            "layers": "railway",  # Restrictijng search to railway stations
+            'addressdetails': 1
+        }
+        headers = {
+            'Connection': 'keep-alive',
+            'Cache-Control': 'max-age=0',
+            'Upgrade-Insecure-Requests': '1',
+            'User-Agent': random.choice(user_agent_list),
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+            'Accept-Encoding': 'gzip, deflate',
+            'Accept-Language': 'en-US,en;q=0.9,fr;q=0.8',
+            'referer': random.choice(reffer_list)
         }
         try:
-            response = requests.get(base_url, params=params)
+            response = requests.get(base_url, params=params, timeout=15, headers=headers)
             response.raise_for_status()
             data = response.json()
             if data:
@@ -43,7 +67,7 @@ class Station:
             else:
                 print(f"No fucking data found for {name}. Default location used.")
         except requests.RequestException as z:
-            print(f"API request failed, try again or change IP address maybe: {z}")
+            print(f"API request failed, try again or change IP address: {z}")
 
     def distance_to(self, station: 'Station') -> float:
         """Calculates the distance to another station using the Haversine formula."""
@@ -63,75 +87,6 @@ class Station:
         return f"<Station: {self.name}, Location: {self.geo_loc}, Data: {self.data}>"
 
 
-"""
-import math
-import requests
-
-
-class Station:
-    def __init__(self):
-        self.geo_loc = None
-
-    def __init__(self, station_name: str, coordinates: tuple[float, float]):
-        self.name = station_name
-        # TODO: should not be the case
-        # Use this: https://nominatim.org/release-docs/latest/api/Search/#result-restriction
-        # with `countrycodes` as EU countries and `layers` as railway
-        self.geo_loc = coordinates  # Coordinates are now provided during instanzierung
-        self.__data = {}
-
-    def fetch_station_data(self, name: str) -> tuple[float, float]:
-        # Base URL for Nominatim API
-        base_url = "https://nominatim.openstreetmap.org/search"
-        # Parameters for the API request
-        params = {
-            "q": name
-        }
-        try:
-            # Sending a GET request to the Nominatim API
-            response = requests.get(base_url, params=params)
-            response.raise_for_status()  # Raises an HTTPError for bad responses
-            data = response.json()
-            if data:
-                # Extracting latitude and longitude from the first result
-                lat = float(data[0]['lat'])
-                lon = float(data[0]['lon'])
-                return lat, lon
-            else:
-                return 0, 0  # Return a default location if no data found
-        except requests.RequestException as e:
-            print(f"Failed to fetch data for {name}: {e}")
-            return 0, 0  # Return a default location in case of any failure
-
-    def distance_to(self, station: 'Station') -> float:
-        # Haversine formula to calculate the distance between two geo-locations
-        lat1, lon1 = self.geo_loc
-        lat2, lon2 = station.geo_loc
-
-        # Earth radius in kilometers
-        R = 6371.0
-
-        # Converting degrees to radians
-        phi1, phi2 = math.radians(lat1), math.radians(lat2)
-        delta_phi = math.radians(lat2 - lat1)
-        delta_lambda = math.radians(lon2 - lon1)
-
-        # Haversine formula
-        a = math.sin(delta_phi / 2) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(delta_lambda / 2) ** 2
-        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
-
-        distance = R * c
-        return distance
-
-
-# Coordinates for Zurich Main Station and Hamburg
-zurich_coordinates = (47.378177, 8.540192)  # Zurich Main Station Dummy Coord
-hamburg_coordinates = (53.551086, 9.993682)  # Hamburg Dummy Coord
-
-# Create Station instances
-zurich_main_station = Station()
-hamburg_station = Station()
-
-# Calculate the distance
-distance = zurich_main_station.distance_to(hamburg_station)
-print(f"Distance from {zurich_main_station.name} to {hamburg_station.name} is {distance:.2f} km")"""
+if __name__ == '__main__':
+    station = Station('Zürich HB')
+    print(station)
