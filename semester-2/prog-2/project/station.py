@@ -13,9 +13,11 @@ import random
 user_agent_list = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36",
     "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36",
-    "Mozilla/5.0 (iPad; CPU OS 15_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/104.0.5112.99 Mobile/15E148 Safari/604.1"
+    "Mozilla/5.0 (iPad; CPU OS 15_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/104.0.5112.99 "
+    "Mobile/15E148 Safari/604.1"
 ]
-reffer_list = [
+
+refer_list = [
     'https://stackoverflow.com/',
     'https://twitter.com/',
     'https://www.google.co.in/',
@@ -51,7 +53,7 @@ class Station:
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
             'Accept-Encoding': 'gzip, deflate',
             'Accept-Language': 'en-US,en;q=0.9,fr;q=0.8',
-            'referer': random.choice(reffer_list)
+            'referer': random.choice(refer_list)
         }
         try:
             response = requests.get(base_url, params=params, timeout=15, headers=headers)
@@ -69,11 +71,11 @@ class Station:
         except requests.RequestException as z:
             print(f"API request failed, try again or change IP address: {z}")
 
-    def distance_to(self, station: 'Station') -> float:
+    def distance_to(self, station) -> float:
         """Calculates the distance to another station using the Haversine formula."""
         lat1, lon1 = self.geo_loc
         lat2, lon2 = station.geo_loc
-        R = 6371.0
+        R = 6371.137
         phi1, phi2 = math.radians(lat1), math.radians(lat2)
         delta_phi = math.radians(lat2 - lat1)
         delta_lambda = math.radians(lon2 - lon1)
@@ -88,5 +90,7 @@ class Station:
 
 
 if __name__ == '__main__':
-    station = Station('Zürich HB')
-    print(station)
+    test_station = Station('Zürich HB')
+    test_station_2 = Station('Uster Bahnhof')
+    print(test_station)
+    print(test_station.distance_to(test_station_2))
