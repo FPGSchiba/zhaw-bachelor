@@ -80,7 +80,7 @@ class Station:
         self.geo_loc = coordinates  # Coordinates are now provided during instanzierung
         self.__data = {}
 
-    def fetch_station_data(self, name: str) -> Tuple[float, float]:
+    def fetch_station_data(self, name: str) -> tuple[float, float]:
         # Base URL for Nominatim API
         base_url = "https://nominatim.openstreetmap.org/search"
         # Parameters for the API request
