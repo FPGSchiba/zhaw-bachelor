@@ -13,7 +13,7 @@ import os
 class Blacklist:
     # Prio: 4
     # @Simi
-    def __init__(self, file_location="./blacklist.json"):
+    def __init__(self, file_location="./data.json"):
         self.file_location = file_location
         # Making sure the file exists, create with empty list if not
         self.blacklist_key = 'blacklist'

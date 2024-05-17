@@ -2,9 +2,9 @@
 pexp(27.9, rate=8) - pexp(0.6, rate=8)
 
 # ---- Aufgabe 2 ----
-
+1/3.8
 # ---- Aufgabe 3 ----
-exp(-3.82*0.93)
+1-exp(-3.82*0.93)
 
 # ---- Aufgabe 4 ----
 nsim <- 100000

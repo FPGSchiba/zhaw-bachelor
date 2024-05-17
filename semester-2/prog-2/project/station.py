@@ -67,9 +67,9 @@ class Station:
                 # Store the full data for potential future use
                 self.data = data[0]
             else:
-                print(f"No fucking data found for {name}. Default location used.")
+                raise ValueError(f"No fucking data found for {name}. Default location used.")
         except requests.RequestException as z:
-            print(f"API request failed, try again or change IP address: {z}")
+            raise ValueError(f"API request failed, try again or change IP address: {z}")
 
     def distance_to(self, station) -> float:
         """Calculates the distance to another station using the Haversine formula."""

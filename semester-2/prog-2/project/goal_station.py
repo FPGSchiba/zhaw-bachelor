@@ -7,11 +7,10 @@ PROG2 P05: Train Journey Application
 """
 
 from station import Station
+from scipy.spatial import distance
 
 
 class GoalStation(Station):
-    # Prio: 2
-    # @John
     def __init__(self, station_name: str):
         super().__init__(station_name)
-        self.country = ""
+        self.country = self.data['address']['country_code']
