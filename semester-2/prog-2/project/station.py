@@ -75,7 +75,7 @@ class Station:
         """Calculates the distance to another station using the Haversine formula."""
         lat1, lon1 = self.geo_loc
         lat2, lon2 = station.geo_loc
-        R = 6371.137
+        R = 6371.0
         phi1, phi2 = math.radians(lat1), math.radians(lat2)
         delta_phi = math.radians(lat2 - lat1)
         delta_lambda = math.radians(lon2 - lon1)

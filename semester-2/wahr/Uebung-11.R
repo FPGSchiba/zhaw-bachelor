@@ -84,18 +84,16 @@ mean(x)
 log(140.56 + 1)
 
 
-# 10
+# 11
 1 - pexp(4, rate = 1/5.5)
 
-# 11
-
+# 12
 pgamma(14, shape=3, rate=1/4)
 
-# 12
-
+# 13
 1 - plnorm(14, meanlog=2.06, sdlog=sqrt(0.17))
 
-# 13
+# 14
 pnorm(6.3, mean=5.8, sd=0.9) - pnorm(4.7, mean=5.8, sd=0.9)
 
 # 15
