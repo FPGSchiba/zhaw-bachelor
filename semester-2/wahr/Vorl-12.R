@@ -47,5 +47,7 @@ pmvnorm(lower=c(-Inf,-Inf), upper=c(0,0), mean = mu, sigma = sigma)[[1]] # 0.085
 pmvnorm(lower=c(-Inf,-Inf), upper=c(0,Inf), mean = mu, sigma = sigma)[[1]] # 0.3897388
 
 
+factorial(50)
+
 
 
