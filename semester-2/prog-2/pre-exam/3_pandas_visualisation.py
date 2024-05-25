@@ -45,7 +45,6 @@ class PandasValidation:
 
     def random_runner(self, value_min, value_max, rounds, spacing):
         mean_expected = (value_max - value_min) / 2
-        count = 0
         for size in range(1, rounds, spacing):
             self.dfmittel = self.dfmittel.head(0)
             for i in range(size):
@@ -53,9 +52,8 @@ class PandasValidation:
                 self.dfmittel.loc[i] = value_random
             # Teilaufgabe 2 hier ergänzen
             mean = self.dfmittel.value.mean()
-            self.dfvis.loc[count, 'mean'] = mean
-            self.dfvis.loc[count, 'diff'] = abs(mean_expected - mean)
-            count += 1
+            self.dfvis.loc[size, 'mean'] = mean
+            self.dfvis.loc[size, 'diff'] = abs(mean_expected - mean)
         fig = self.dfvis.plot(title=str(time.time()))
         fig.figure.savefig('image.png')
 

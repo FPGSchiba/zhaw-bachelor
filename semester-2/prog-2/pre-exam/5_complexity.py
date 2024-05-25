@@ -86,7 +86,7 @@ def measurement(algo, args):
 
 
 def experiment():
-    for exp in range(3, 6):
+    for exp in range(3, 9):
         test_list = list_generator(10 ** exp)
         pivot = random.choice(test_list)
         print(f"Laufzeitmessung Algorithmus A für 10^{exp}: ", end='')
