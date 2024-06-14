@@ -49,5 +49,7 @@ pmvnorm(lower=c(-Inf,-Inf), upper=c(0,Inf), mean = mu, sigma = sigma)[[1]] # 0.3
 
 factorial(50)
 
+qgeom(0.5, 1/365)
+
 
 
