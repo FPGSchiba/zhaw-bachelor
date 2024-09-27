@@ -63,7 +63,6 @@ fn example() -> Result<(), Box<dyn Error>> {
             2 => num_women += 1,
             _ => println!("Sex not found."),
         }
-        println!("{:?}", row);
         count += 1;
     }
     println!("Number of Rows: {}", count);
