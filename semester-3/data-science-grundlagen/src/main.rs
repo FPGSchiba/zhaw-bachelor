@@ -1,6 +1,8 @@
 #![warn(clippy::all, rust_2018_idioms)]
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")] // hide console window on Windows in release
 
+mod app;
+
 // When compiling natively:
 #[cfg(not(target_arch = "wasm32"))]
 fn main() -> eframe::Result {
@@ -19,9 +21,15 @@ fn main() -> eframe::Result {
         */
         ..Default::default()
     };
+
     eframe::run_native(
         "eframe template",
         native_options,
-        Box::new(|cc| Ok(Box::new(data_science_grundlagen::TemplateApp::new(cc)))),
+        Box::new(|cc| {
+            let mut app = app::TemplateApp::default();
+            let csv_result = std::fs::read_to_string("./exercise-1/Diabetes-Daten.csv");
+            app.load_csv(csv_result.unwrap().as_str());
+            Ok(Box::new(app))
+        }),
     )
 }

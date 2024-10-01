@@ -2,19 +2,63 @@
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct TemplateApp {
-    // Example stuff:
-    label: String,
-
-    #[serde(skip)] // This how you opt-out of serialization of a field
-    value: f32,
+    reversed: bool,
+    selection: std::collections::HashSet<usize>,
+    checked: bool,
+    header: Vec<String>,
+    rows: Vec<Vec<String>>,
 }
 
 impl Default for TemplateApp {
     fn default() -> Self {
         Self {
-            // Example stuff:
-            label: "Hello World!".to_owned(),
-            value: 2.7,
+            reversed: false,
+            selection: std::collections::HashSet::new(),
+            checked: false,
+            header: vec![
+                "test1".to_owned(),
+                "test2".to_owned(),
+                "test3".to_owned(),
+                "test4".to_owned(),
+                "test5".to_owned(),
+            ],
+            rows: vec![
+                vec![
+                    "a".to_owned(),
+                    "b".to_owned(),
+                    "c".to_owned(),
+                    "d".to_owned(),
+                    "e".to_owned(),
+                ],
+                vec![
+                    "f".to_owned(),
+                    "g".to_owned(),
+                    "h".to_owned(),
+                    "i".to_owned(),
+                    "j".to_owned(),
+                ],
+                vec![
+                    "k".to_owned(),
+                    "l".to_owned(),
+                    "m".to_owned(),
+                    "n".to_owned(),
+                    "o".to_owned(),
+                ],
+                vec![
+                    "p".to_owned(),
+                    "q".to_owned(),
+                    "r".to_owned(),
+                    "s".to_owned(),
+                    "t".to_owned(),
+                ],
+                vec![
+                    "u".to_owned(),
+                    "v".to_owned(),
+                    "w".to_owned(),
+                    "x".to_owned(),
+                    "y".to_owned(),
+                ],
+            ],
         }
     }
 }
@@ -30,8 +74,35 @@ impl TemplateApp {
         if let Some(storage) = cc.storage {
             return eframe::get_value(storage, eframe::APP_KEY).unwrap_or_default();
         }
-
         Default::default()
+    }
+
+    pub fn load_csv(&mut self, csv: &str) {
+        let mut reader = csv::Reader::from_reader(csv.as_bytes());
+        let mut header = vec![];
+        let mut rows = vec![];
+
+        for result in reader.records() {
+            let record = result.expect("Failed to read CSV record");
+            if header.is_empty() {
+                header = record.iter().map(|s| s.to_owned()).collect();
+            } else {
+                rows.push(record.iter().map(|s| s.to_owned()).collect());
+            }
+        }
+
+        self.header = header;
+        self.rows = rows;
+    }
+
+    fn toggle_row_selection(&mut self, row_index: usize, row_response: &egui::Response) {
+        if row_response.clicked() {
+            if self.selection.contains(&row_index) {
+                self.selection.remove(&row_index);
+            } else {
+                self.selection.insert(row_index);
+            }
+        }
     }
 }
 
@@ -60,26 +131,82 @@ impl eframe::App for TemplateApp {
                     });
                     ui.add_space(16.0);
                 }
-
-                egui::widgets::global_dark_light_mode_buttons(ui);
             });
         });
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            // The central panel the region left after adding TopPanel's and SidePanel's
-            ui.heading("eframe template");
+            use egui_extras::{Column, TableBuilder};
 
-            ui.horizontal(|ui| {
-                ui.label("Write something: ");
-                ui.text_edit_singleline(&mut self.label);
-            });
+            let available_height = ui.available_height();
+            let mut table = TableBuilder::new(ui)
+                .striped(false)
+                .resizable(false)
+                .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
+                .min_scrolled_height(0.0)
+                .max_scroll_height(available_height)
+                .column(Column::auto()); // Index column allocation
 
-            ui.add(egui::Slider::new(&mut self.value, 0.0..=10.0).text("value"));
-            if ui.button("Increment").clicked() {
-                self.value += 1.0;
+            // Dynamic column allocation:
+            for _ in self.header.iter() {
+                table = table.column(Column::auto());
             }
 
-            ui.separator();
+            table
+                .header(20.0, |mut header| {
+                    header.col(|ui| {
+                        egui::Sides::new().show(
+                            ui,
+                            |ui| {
+                                ui.strong("Row");
+                            },
+                            |ui| {
+                                self.reversed ^=
+                                    ui.button(if self.reversed { "⬆" } else { "⬇" }).clicked();
+                            },
+                        );
+                    });
+
+                    for (_, header_content) in self.header.iter().enumerate() {
+                        header.col(|ui| {
+                            ui.strong(header_content);
+                        });
+                    }
+                })
+                .body(|mut body| {
+                    for row_index in 0..self.rows.len() {
+                        let row_index = if self.reversed {
+                            self.rows.len() - 1 - row_index
+                        } else {
+                            row_index
+                        };
+
+                        if self.rows[row_index].len() != self.header.len() {
+                            // Skip rows that don't match the header:
+                            println!(
+                                "Skipping row {} because it has the wrong number of columns\n",
+                                row_index
+                            );
+                            continue;
+                        }
+
+                        body.row(18.0, |mut row| {
+                            row.set_selected(self.selection.contains(&row_index));
+
+                            // Index column
+                            row.col(|ui| {
+                                ui.label(row_index.to_string());
+                            });
+
+                            for (_, cell_content) in self.rows[row_index].iter().enumerate() {
+                                row.col(|ui| {
+                                    ui.label(cell_content);
+                                });
+                            }
+
+                            self.toggle_row_selection(row_index, &row.response());
+                        });
+                    }
+                });
         });
     }
 }
