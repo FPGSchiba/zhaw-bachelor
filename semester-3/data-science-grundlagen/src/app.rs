@@ -15,50 +15,8 @@ impl Default for TemplateApp {
             reversed: false,
             selection: std::collections::HashSet::new(),
             checked: false,
-            header: vec![
-                "test1".to_owned(),
-                "test2".to_owned(),
-                "test3".to_owned(),
-                "test4".to_owned(),
-                "test5".to_owned(),
-            ],
-            rows: vec![
-                vec![
-                    "a".to_owned(),
-                    "b".to_owned(),
-                    "c".to_owned(),
-                    "d".to_owned(),
-                    "e".to_owned(),
-                ],
-                vec![
-                    "f".to_owned(),
-                    "g".to_owned(),
-                    "h".to_owned(),
-                    "i".to_owned(),
-                    "j".to_owned(),
-                ],
-                vec![
-                    "k".to_owned(),
-                    "l".to_owned(),
-                    "m".to_owned(),
-                    "n".to_owned(),
-                    "o".to_owned(),
-                ],
-                vec![
-                    "p".to_owned(),
-                    "q".to_owned(),
-                    "r".to_owned(),
-                    "s".to_owned(),
-                    "t".to_owned(),
-                ],
-                vec![
-                    "u".to_owned(),
-                    "v".to_owned(),
-                    "w".to_owned(),
-                    "x".to_owned(),
-                    "y".to_owned(),
-                ],
-            ],
+            header: vec![],
+            rows: vec![vec![]],
         }
     }
 }
@@ -78,20 +36,18 @@ impl TemplateApp {
     }
 
     pub fn load_csv(&mut self, csv: &str) {
-        let mut reader = csv::Reader::from_reader(csv.as_bytes());
-        let mut header = vec![];
+        let mut record_reader = csv::Reader::from_reader(csv.as_bytes());
+        let mut header_reader = csv::Reader::from_reader(csv.as_bytes());
+        header_reader.headers().unwrap().iter().for_each(|s| {
+            self.header.push(s.to_owned());
+        });
         let mut rows = vec![];
 
-        for result in reader.records() {
+        for result in record_reader.records() {
             let record = result.expect("Failed to read CSV record");
-            if header.is_empty() {
-                header = record.iter().map(|s| s.to_owned()).collect();
-            } else {
-                rows.push(record.iter().map(|s| s.to_owned()).collect());
-            }
+            rows.push(record.iter().map(|s| s.to_owned()).collect());
         }
 
-        self.header = header;
         self.rows = rows;
     }
 

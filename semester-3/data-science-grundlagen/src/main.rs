@@ -23,7 +23,7 @@ fn main() -> eframe::Result {
     };
 
     eframe::run_native(
-        "eframe template",
+        "CSV Viewer",
         native_options,
         Box::new(|cc| {
             let mut app = app::TemplateApp::default();
