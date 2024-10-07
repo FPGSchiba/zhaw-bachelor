@@ -25,7 +25,7 @@ fn main() -> eframe::Result {
     eframe::run_native(
         "CSV Viewer",
         native_options,
-        Box::new(|cc| {
+        Box::new(|_cc| {
             let mut app = app::TemplateApp::default();
             let csv_result = std::fs::read_to_string("./exercise-1/Diabetes-Daten.csv");
             app.load_csv(csv_result.unwrap().as_str());
