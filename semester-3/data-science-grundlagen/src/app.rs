@@ -1,3 +1,5 @@
+use csv::ReaderBuilder;
+
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
@@ -35,9 +37,13 @@ impl TemplateApp {
         Default::default()
     }
 
-    pub fn load_csv(&mut self, csv: &str) {
-        let mut record_reader = csv::Reader::from_reader(csv.as_bytes());
-        let mut header_reader = csv::Reader::from_reader(csv.as_bytes());
+    pub fn load_csv(&mut self, csv: &str, delimiter: Option<u8>) {
+        let mut record_reader = ReaderBuilder::new()
+            .delimiter(delimiter.unwrap_or(b','))
+            .from_reader(csv.as_bytes());
+        let mut header_reader = ReaderBuilder::new()
+            .delimiter(delimiter.unwrap_or(b','))
+            .from_reader(csv.as_bytes());
         header_reader.headers().unwrap().iter().for_each(|s| {
             self.header.push(s.to_owned());
         });

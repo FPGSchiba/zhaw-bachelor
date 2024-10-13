@@ -27,8 +27,8 @@ fn main() -> eframe::Result {
         native_options,
         Box::new(|_cc| {
             let mut app = app::TemplateApp::default();
-            let csv_result = std::fs::read_to_string("./exercise-1/Diabetes-Daten.csv");
-            app.load_csv(csv_result.unwrap().as_str());
+            let csv_result = std::fs::read_to_string("./restaurants.csv");
+            app.load_csv(csv_result.unwrap().as_str(), None);
             Ok(Box::new(app))
         }),
     )
