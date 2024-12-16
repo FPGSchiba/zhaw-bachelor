@@ -50,3 +50,56 @@ median(daily_service) # ~ 6.5
 quantile(daily_service, probs = 0.75) # ~ 8.5
 
 
+# ---- Aufgabe 6 ----
+nsim <- 50000
+complete_reset_cards <- function() {
+  return(c(rep(1, 8), rep(2, 7), rep(3, 7), rep(4, 7), rep(5, 6), rep(6, 6), rep(-1, 3), rep(-2, 6)))
+}
+cards <- complete_reset_cards()
+m <- matrix(nrow = nsim, ncol = 2)
+
+reduct_card <- function(card) {
+  return(cards[cards == card])
+}
+
+reset_cards <- function(num_schrecken) {
+  return(c(rep(1, 8), rep(2, 7), rep(3, 7), rep(4, 7), rep(5, 6), rep(6, 6), rep(-1, 3), rep(-2, 6 - num_schrecken)))
+}
+
+
+for (i in 1:nsim) {
+  running <- TRUE
+  num_voegel <- 0
+  num_katzen <- 0
+  num_schrecken <- 0
+  while(running) {
+    card <- sample(cards, 1)
+    if (card < 0) {
+      if (card == -1) {
+        num_katzen <- num_katzen + 1
+        num_voegel <- 0
+        cards <- reset_cards(num_schrecken)
+      }
+      if (card == -2) {
+        num_schrecken <- num_schrecken + 1
+        cards <- reduct_card(-2)
+      }
+    } else {
+      num_voegel <- num_voegel + card
+      cards <- reduct_card(card)
+    }
+    
+    if (num_schrecken == 6) {
+      running <- FALSE
+    }
+  }
+  complete_reset_cards()
+  m[i,1] <- num_voegel
+  m[i,2] <- num_katzen
+}
+
+mean(m[,1])
+mean(m[,2])
+
+
+
