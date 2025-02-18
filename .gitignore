@@ -4,6 +4,7 @@
 .Ruserdata
 
 *.idea
+.env
 
 cache.csv
 semester-2/prog-2/sw-7/datasetpandashardbruecke.py
@@ -11,5 +12,5 @@ semester-2/prog-2/sw-7/datasetpandashardbruecke.py
 data
 
 *.pth
-
+**/output/**
 **/target/**
