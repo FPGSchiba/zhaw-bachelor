@@ -1,6 +1,8 @@
 library(tidyverse)
 library(stringr)
 
+path <- "/Users/schiba/data/pm-02/ugz_luftqualitaetsmessung_seit-2012.csv"
+
 # Read headers and data
 headers <- read.csv(path, header = FALSE, nrows = 6, stringsAsFactors = FALSE)
 combined_headers <- apply(headers, 2, function(x) paste(na.omit(x[x != ""]), collapse = "_"))
@@ -8,6 +10,10 @@ combined_headers <- apply(headers, 2, function(x) paste(na.omit(x[x != ""]), col
 data <- read.csv(path, skip = 6, header = FALSE)
 names(data) <- combined_headers
 names(data)[1] <- "datum"
+
+# Convert "NaN" to NA before processing
+data <- data |>
+  mutate(across(-datum, ~ ifelse(. == "NaN", NA_real_, as.numeric(.))))
 
 # Extract location and parameter information
 col_info <- tibble(col_name = names(data)[-1]) |>
