@@ -4,6 +4,7 @@ subtitle: "Mein Lösungsansatz"
 author: "Jann Erhardt"
 date: last-modified
 documentclass: article
+geometry: margin=1in
 format: pdf
 ---
 
@@ -128,65 +129,181 @@ result |>
     )
 ````
 
-```{r b_plot, echo=FALSE, warning=FALSE}
+```{r b_plot, echo=FALSE, warning=FALSE, message=FALSE}
+#| fig-width: 7
+#| fig-height: 4
+#| fig-align: center
+#| fig-cap: "Verlauf der log-transformierten NOx-Konzentrationen für Schimmelstrasse und Heubeeribüel. Farben repräsentieren die Standorte."
 result |>
-    filter(standort %in% c("schimmelstrasse", "heubeeribuel")) |>
-    mutate(nox = no + no2) |>
-    ggplot(aes(x = datum, y = nox, color = standort)) +
-    geom_line() +
+    filter(standort %in% c("schimmelstrasse", "heubeeribueel")) |>
+    mutate(nox = log(no + no2)) |>
+    ggplot(aes(x = datum, y = nox, color = standort)) + # Group by location using color
+    geom_line(linewidth = 0.3) + # Thinner lines for clarity
+    geom_smooth(
+        aes(color = standort), # Add smoothed trend lines for each location
+        se = FALSE, # Disable standard error bands for clarity
+        linewidth = 1.2, # Thicker smoothed lines for better visibility
+        linetype = "solid" # Use solid lines for smooth trends
+    ) +
+    scale_color_brewer(palette = "Accent", name = "Standort") + # Use a muted color palette
     labs(
         x = "Datum",
-        y = "NOx Konzentration (µg/m³)",
-        caption = "Verlauf der NOx-Konzentration über den gesamten Zeitraum für die Standorte Schimmelstrasse und Heubeeribüel"
+        y = expression("log(NOx-Konzentration)" ~ "(µg/m³)"), # Update y-axis label
     ) +
+    theme_light() + # Use a light theme for better contrast
     theme(
         axis.title = element_text(size = 14),
-        plot.caption = element_text(size = 12),
-        legend.position = "top",
-        legend.title = element_blank()
+        axis.text = element_text(size = 12),
+        plot.caption = element_text(size = 10),
+        legend.position = c(0.85, 0.85), # Place legend inside the graphic (top-right corner)
+        legend.background = element_rect(fill = "white", color = "black"), # Add a background to the legend
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10)
     )
 ```
 
 ```{r c_plot, echo=FALSE, warning=FALSE}
+#| fig-cap: "Streuung der Log transformierten PM10-Konzentration pro Wochentag für den Standort Rosengartenstrasse"
+#| fig-width: 5
+#| fig-height: 3
 result |>
-    ungroup() |> # Add this line to remove any existing grouping
+    ungroup() |> # Remove any existing grouping
     filter(standort == "rosengartenstrasse") |>
-    ggplot(aes(x = wochentag, y = pm10)) +
-    geom_boxplot() +
+    ggplot(aes(x = wochentag, y = pm10, fill = wochentag)) + # Add fill aesthetic for boxplots
+    geom_boxplot(alpha = 0.7) + # Add transparency for better visuals
+    scale_fill_brewer(palette = "Set3") + # Use a color palette for the fill
+    scale_y_log10() + # Apply log transformation to the y-axis
     labs(
         x = "Wochentag",
-        y = "PM10 Konzentration (µg/m³)",
-        caption = "Streuung der PM10-Konzentration pro Wochentag für den Standort Rosengartenstrasse"
+        y = expression("log(PM10 Konzentration)" ~ "(µg/m³)"), # Update y-axis label to reflect log transformation
     ) +
+    theme_light() + # Use a light theme for better contrast
     theme(
         axis.title = element_text(size = 14),
-        plot.caption = element_text(size = 12)
+        axis.text = element_text(size = 12),
+        plot.caption = element_text(size = 12),
+        legend.position = "none" # Remove legend if not needed
     )
 ```
 
-```{r d_plot, echo=FALSE, warning=FALSE}
+Notes: Log transformiert macht die Ausreisser nach unten und oben sehr viel besser sichtbar.
+
+```{r d_plot_1, output=FALSE, echo=FALSE, warning=FALSE}
+#| fig-width: 7
+#| fig-height: 5
+#| out-width: 6.5in
 result |>
     filter(datum >= as.Date("2012-01-01") & datum <= as.Date("2020-12-31")) |>
-    mutate(nox = no + no2) |>
+    mutate(nox = log(no + no2)) |> # Log transformation here
+    # First calculate monthly values for each year
     group_by(standort, jahr, monat) |>
     summarise(
-        mean_nox = mean(nox, na.rm = TRUE),
-        sd_nox = sd(nox, na.rm = TRUE),
-        .groups = "drop" # Add this to handle the grouping warning
+        year_month_mean = mean(nox, na.rm = TRUE)
     ) |>
-    mutate(date = make_date(jahr, monat, 1)) |> # Create proper date object
-    ggplot(aes(x = date, y = mean_nox, color = standort)) +
-    geom_line() +
-    geom_ribbon(aes(ymin = mean_nox - sd_nox, ymax = mean_nox + sd_nox, fill = standort), alpha = 0.2) +
-    labs(
-        x = "Datum",
-        y = "Mittlere NOx Konzentration (µg/m³)",
-        caption = "Mittlere NOx-Konzentration und Streuung pro Monat für alle Stationen von 2012 bis 2020"
+    mutate(
+        monat_date = make_date(2012, monat, 1), # Use 2012 for consistent x-axis
+        jahr = as.factor(jahr) # Convert year to factor for discrete colors
+    ) |>
+    ggplot() +
+    # Add points for individual years with color
+    geom_point(aes(x = monat_date, y = year_month_mean, color = jahr),
+        size = 2, alpha = 0.7
     ) +
+    geom_line(aes(x = monat_date, y = year_month_mean, color = jahr, group = jahr),
+        alpha = 0.4, linewidth = 0.5
+    ) +
+    # Add summary line and ribbon
+    stat_summary(
+        aes(x = monat_date, y = year_month_mean),
+        fun = mean,
+        geom = "line",
+        linewidth = 1.2,
+        color = "black"
+    ) +
+    stat_summary(
+        aes(x = monat_date, y = year_month_mean),
+        fun.data = function(y) {
+            data.frame(
+                ymin = mean(y) - sd(y),
+                ymax = mean(y) + sd(y)
+            )
+        },
+        geom = "ribbon",
+        fill = "grey",
+        alpha = 0.2
+    ) +
+    facet_wrap(~standort, scales = "free_y") +
+    scale_x_date(date_labels = "%B", date_breaks = "1 month") +
+    scale_color_viridis_d(name = "Jahr") + # Use viridis color palette
+    labs(
+        x = "Monat",
+        y = expression(log("NOx-Konzentration") ~ "(µg/m³)"), # Updated y-axis label to show log
+        caption = "Mittlere monatliche NOx-Konzentrationen (Log-transformiert) mit Standardabweichung (2012-2020)\nFarbige Punkte und Linien zeigen Monatsmittelwerte einzelner Jahre"
+    ) +
+    theme_light() +
     theme(
-        axis.title = element_text(size = 14),
-        plot.caption = element_text(size = 12),
-        legend.position = "top",
-        legend.title = element_blank()
+        axis.title = element_text(size = 12),
+        axis.text = element_text(size = 10),
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.caption = element_text(size = 10),
+        strip.text = element_text(size = 10),
+        panel.grid.minor = element_blank(),
+        legend.position = "right",
+        legend.title = element_text(size = 10),
+        legend.text = element_text(size = 9)
+    )
+```
+
+```{r d_plot_2, echo=FALSE, message=FALSE, warning=FALSE}
+#| fig-width: 6
+#| fig-height: 9
+#| fig-align: center
+#| fig-cap: "Monatliche Verteilung der log-transformierten NOx-Konzentrationen mit Trendlinie (2012-2020) Boxplots zeigen Quartile je Monat, farbige Linien zeigen den geglätteten Mittelwert"
+#| out-width: 6in
+#| out-height: 8.5in
+result |>
+    filter(datum >= as.Date("2012-01-01") & datum <= as.Date("2020-12-31")) |>
+    mutate(
+        nox = log(no + no2), # Log transformation here
+        month_year = format(datum, "%Y-%m"), # Create month-year combination for boxplots
+        standort = tools::toTitleCase(standort) # Capitalize station names
+    ) |>
+    ggplot(aes(x = datum)) +
+    # Add boxplots for each month, colored by station
+    geom_boxplot(
+        aes(y = nox, group = month_year, fill = standort),
+        outlier.shape = NA, # Remove outlier points for clarity
+        alpha = 0.5,
+        width = 10 # Adjust width of boxplots
+    ) +
+    # Add smooth mean trend
+    geom_smooth(
+        aes(y = nox, color = standort),
+        linewidth = 1,
+        se = FALSE # Disable standard error band
+    ) +
+    facet_grid(standort ~ ., scales = "free_y", switch = "y") + # Move facet titles to the top
+    scale_x_date(
+        date_breaks = "2 years", # Show fewer x-axis labels
+        date_labels = "%Y"
+    ) +
+    scale_fill_brewer(palette = "Set3", name = "Station") + # Add color to boxplots
+    scale_color_brewer(palette = "Set3", name = "Station") + # Add color to smooth lines
+    labs(
+        x = "Jahr",
+        y = expression(log("NOx-Konzentration") ~ "(µg/m³)"), # Updated y-axis label to show log
+    ) +
+    theme_light() +
+    theme(
+        axis.title = element_text(size = 12),
+        axis.text = element_text(size = 10),
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.caption = element_text(size = 10),
+        strip.text = element_text(size = 10, face = "bold"), # Bold facet titles
+        strip.background = element_rect(fill = "lightgrey", color = "black"),
+        strip.placement = "outside", # Place facet titles outside the plot area
+        panel.grid.minor = element_blank(),
+        panel.spacing = unit(1.5, "lines"), # Add more spacing between facets
+        plot.margin = margin(t = 10, r = 10, b = 30, l = 10) # Add extra space at the bottom
     )
 ```

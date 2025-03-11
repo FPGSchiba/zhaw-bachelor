@@ -137,23 +137,62 @@ result |>
 result |>
   filter(datum >= as.Date("2012-01-01") & datum <= as.Date("2020-12-31")) |>
   mutate(nox = no + no2) |>
+  # First calculate monthly values for each year
   group_by(standort, jahr, monat) |>
   summarise(
-    mean_nox = mean(nox, na.rm = TRUE),
-    sd_nox = sd(nox, na.rm = TRUE)
+    year_month_mean = mean(nox, na.rm = TRUE)
   ) |>
-  mutate(date = make_date(jahr, monat, 1)) |> # Create proper date object
-  ggplot(aes(x = date, y = mean_nox, color = standort)) +
-  geom_line() +
-  geom_ribbon(aes(ymin = mean_nox - sd_nox, ymax = mean_nox + sd_nox, fill = standort), alpha = 0.2) +
-  labs(
-    x = "Datum",
-    y = "Mittlere NOx Konzentration (µg/m³)",
-    caption = "Mittlere NOx-Konzentration und Streuung pro Monat für alle Stationen von 2012 bis 2020"
+  mutate(
+    monat_date = make_date(2012, monat, 1), # Use 2012 for consistent x-axis
+    jahr = as.factor(jahr) # Convert year to factor for discrete colors
+  ) |>
+  ggplot() +
+  # Add points for individual years with color
+  geom_point(aes(x = monat_date, y = year_month_mean, color = jahr),
+    size = 2, alpha = 0.7
   ) +
+  geom_line(aes(x = monat_date, y = year_month_mean, color = jahr, group = jahr),
+    alpha = 0.4, linewidth = 0.5
+  ) +
+  # Add summary line and ribbon
+  stat_summary(
+    aes(x = monat_date, y = year_month_mean),
+    fun = mean,
+    geom = "line",
+    linewidth = 1.2,
+    color = "black"
+  ) +
+  stat_summary(
+    aes(x = monat_date, y = year_month_mean),
+    fun.data = function(y) {
+      data.frame(
+        ymin = mean(y) - sd(y),
+        ymax = mean(y) + sd(y)
+      )
+    },
+    geom = "ribbon",
+    fill = "grey",
+    alpha = 0.2
+  ) +
+  facet_wrap(~standort, scales = "free_y") +
+  scale_x_date(date_labels = "%B", date_breaks = "1 month") +
+  scale_color_viridis_d(name = "Jahr") + # Use viridis color palette
+  labs(
+    x = "Monat",
+    y = "NOx-Konzentration (µg/m³)",
+    caption = "Mittlere monatliche NOx-Konzentrationen mit Standardabweichung (2012-2020)\nFarbige Punkte und Linien zeigen Monatsmittelwerte einzelner Jahre"
+  ) +
+  theme_light() +
   theme(
-    axis.title = element_text(size = 14),
-    plot.caption = element_text(size = 12),
-    legend.position = "top",
-    legend.title = element_blank()
+    axis.title = element_text(size = 12),
+    axis.text = element_text(size = 10),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.caption = element_text(size = 10),
+    strip.text = element_text(size = 10),
+    panel.grid.minor = element_blank(),
+    legend.position = "right",
+    legend.title = element_text(size = 10),
+    legend.text = element_text(size = 9)
   )
+
+print(head(result), width = Inf)
