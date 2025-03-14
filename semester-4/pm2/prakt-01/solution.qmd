@@ -3,42 +3,45 @@ title: "DSPM2: Praktikum 1"
 subtitle: "Mein Lösungsansatz"
 author: "Jann Erhardt"
 date: last-modified
-documentclass: article
 geometry: margin=1in
 format: pdf
+output:
+  pdf_document:
+    toc: true
+    page_breaks: "before"
 ---
 
-```{r setup, include=FALSE}
+{{< pagebreak >}}
+
+```{r setup, include=FALSE, echo=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(lubridate)
 library(tidyverse)
 library(stringr)
 
-path <- "/Users/schiba/data/pm-02/ugz_luftqualitaetsmessung_seit-2012.csv"
+path <- "D:/Data/zhaw/ugz_luftqualitaetsmessung_seit-2012.csv"
 ```
 
-# Datenimport
-
-```{r prepare_headers}
+```{r prepare_headers, echo=FALSE}
 headers <- read.csv(path, header = FALSE, nrows = 6, stringsAsFactors = FALSE)
 combined_headers <- apply(headers, 2, function(x) paste(na.omit(x[x != ""]), collapse = "_"))
 ```
 
-```{r read_data}
+```{r read_data, echo=FALSE}
 data <- read.csv(path, skip = 6, header = FALSE)
 
 names(data) <- combined_headers
 names(data)[1] <- "datum"
 ```
 
-```{r data_cleaning, warning=FALSE}
+```{r data_cleaning, warning=FALSE, echo=FALSE}
 # Convert columns to appropriate types
 data <- data |>
     mutate(across(-datum, ~ ifelse(. %in% c("NaN", ""), NA, .))) |> # Replace "NaN" and empty strings with NA
     mutate(across(-datum, ~ as.numeric(.))) # Convert remaining values to numeric
 ```
 
-```{r location_parameter_extraction}
+```{r location_parameter_extraction, echo=FALSE}
 # Extract location and parameter information
 col_info <- tibble(col_name = names(data)[-1]) |>
     mutate(
@@ -64,7 +67,7 @@ col_info <- tibble(col_name = names(data)[-1]) |>
     select(col_name, location, parameter)
 ```
 
-```{r data_preparation}
+```{r data_preparation, echo=FALSE}
 # Convert to long format, join with column info, then to wide format
 result <- data |>
     pivot_longer(cols = -datum, names_to = "col_name", values_to = "value") |>
@@ -82,8 +85,7 @@ result <- data |>
     mutate(across(where(is.numeric), ~ ifelse(is.nan(.), NA, .)))
 ```
 
-# Erweiterung des Datensatzes
-```{r wochentag_column}
+```{r wochentag_column, echo=FALSE}
 # Sets the start of the week to monday
 options("lubridate.week.start" = 1)
 
@@ -100,34 +102,53 @@ result <- result |>
     ))
 ```
 
-```{r monat_column}
+```{r monat_column, echo=FALSE}
 result["monat"] <- result$datum |>
     ymd() |>
     month(label = TRUE, abbr = TRUE)
 ```
 
-```{r jahr_column}
+```{r jahr_column, echo=FALSE}
 result["jahr"] <- result$datum |>
     year()
 ```
 
-# Visualisierung
+# Visualisierungen
+
+## Aufgabe A
+
+**Aufgabenstellung**:
+Stellen Sie in einem Scatterplot für den Standort Stampfenbachstrasse die Messgrössen
+Globalstrahlung (y-Achse) und die maximale Ozonkonzentration während einer Stunde (xAchse) dar. Legen Sie zudem einen Glätter in die Grafik. Schauen Sie das beide Achsen
+verständlich beschriftet sind und vergessen Sie die Bildunterschrift nicht. Ein Titel ist nicht
+notwendig.
+
 ```{r a_plot, echo=FALSE, warning=FALSE, message=FALSE}
+#| fig-width: 7
+#| fig-height: 4
+#| fig-align: center
+#| fig-cap: "Scatterplot der Ozonkonzentration und Globalstrahlung für den Standort Stampfenbachstrasse"
 result |>
     filter(standort == "stampfenbachstrasse") |>
     ggplot(aes(x = o3_max_h1, y = strglo)) +
-    geom_point() +
+    geom_point(alpha=0.2) +
     geom_smooth(method = "loess", se = FALSE, message = FALSE) +
     labs(
         x = "Maximale Ozonkonzentration während einer Stunde (µg/m³)",
         y = "Globalstrahlung (W/m²)",
-        caption = "Scatterplot der Ozonkonzentration und Globalstrahlung für den Standort Stampfenbachstrasse"
-    ) +
-    theme(
-        axis.title = element_text(size = 14),
-        plot.caption = element_text(size = 12)
     )
-````
+```
+
+{{< pagebreak >}}
+
+## Aufgabe B
+
+**Aufgabenstellung**:
+Stellen Sie den Verlauf der Stickoxidkonzentration (NOx = NO + NO2) über den gesamten
+Zeitraum gemeinsam für die Standorte Schimmelstrasse und Heubeeribüel dar. Achten sie
+darauf, dass der zeitliche Verlauf der für beide Standorte gut erkennbar ist, beide Achsen
+und die Legende (innerhalb der Grafik plaziert) verständlich beschriftet sind und vergessen
+Sie die Bildunterschrift nicht. Die Grafik braucht keinen Titel.
 
 ```{r b_plot, echo=FALSE, warning=FALSE, message=FALSE}
 #| fig-width: 7
@@ -152,15 +173,21 @@ result |>
     ) +
     theme_light() + # Use a light theme for better contrast
     theme(
-        axis.title = element_text(size = 14),
-        axis.text = element_text(size = 12),
-        plot.caption = element_text(size = 10),
         legend.position = c(0.85, 0.85), # Place legend inside the graphic (top-right corner)
         legend.background = element_rect(fill = "white", color = "black"), # Add a background to the legend
         legend.title = element_text(size = 12),
         legend.text = element_text(size = 10)
     )
 ```
+
+{{< pagebreak >}}
+
+# Aufgabe C
+
+**Aufgabenstellung**:
+Stellen Sie die Streuung der PM10 Konzentration an der Rosengartenstrasse pro Wochentag
+dar. Schauen Sie, dass beide Achsen verständlich beschriftet sind und vergessen Sie die
+Bildunterschrift nicht. Die Grafik braucht keinen Titel.
 
 ```{r c_plot, echo=FALSE, warning=FALSE}
 #| fig-cap: "Streuung der Log transformierten PM10-Konzentration pro Wochentag für den Standort Rosengartenstrasse"
@@ -179,14 +206,21 @@ result |>
     ) +
     theme_light() + # Use a light theme for better contrast
     theme(
-        axis.title = element_text(size = 14),
-        axis.text = element_text(size = 12),
-        plot.caption = element_text(size = 12),
         legend.position = "none" # Remove legend if not needed
     )
 ```
 
-Notes: Log transformiert macht die Ausreisser nach unten und oben sehr viel besser sichtbar.
+Log transformiert macht die Ausreisser nach unten und oben sehr viel besser sichtbar.
+
+{{< pagebreak >}}
+
+## Aufgabe D
+
+**Aufgabenstellung**:
+Stellen Sie den zeitlichen Verlauf der Stickoxidkonzentration an allen vier Stationen von 2012-
+2020 für jeden Monat dar. In der Abbildung sollte der mittlere Verlauf und die Streuung der
+Monate für alle Jahre ersichtlich sein. Schauen Sie, dass beide Achsen verständlich beschriftet
+sind und vergessen Sie die Bildunterschrift nicht. Die Grafik braucht keinen Titel.
 
 ```{r d_plot_1, output=FALSE, echo=FALSE, warning=FALSE}
 #| fig-width: 7
@@ -242,10 +276,6 @@ result |>
     ) +
     theme_light() +
     theme(
-        axis.title = element_text(size = 12),
-        axis.text = element_text(size = 10),
-        axis.text.x = element_text(angle = 45, hjust = 1),
-        plot.caption = element_text(size = 10),
         strip.text = element_text(size = 10),
         panel.grid.minor = element_blank(),
         legend.position = "right",
@@ -260,7 +290,7 @@ result |>
 #| fig-align: center
 #| fig-cap: "Monatliche Verteilung der log-transformierten NOx-Konzentrationen mit Trendlinie (2012-2020) Boxplots zeigen Quartile je Monat, farbige Linien zeigen den geglätteten Mittelwert"
 #| out-width: 6in
-#| out-height: 8.5in
+#| out-height: 7in
 result |>
     filter(datum >= as.Date("2012-01-01") & datum <= as.Date("2020-12-31")) |>
     mutate(
@@ -295,10 +325,6 @@ result |>
     ) +
     theme_light() +
     theme(
-        axis.title = element_text(size = 12),
-        axis.text = element_text(size = 10),
-        axis.text.x = element_text(angle = 45, hjust = 1),
-        plot.caption = element_text(size = 10),
         strip.text = element_text(size = 10, face = "bold"), # Bold facet titles
         strip.background = element_rect(fill = "lightgrey", color = "black"),
         strip.placement = "outside", # Place facet titles outside the plot area

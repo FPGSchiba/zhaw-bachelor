@@ -4,7 +4,7 @@ library(tidyverse)
 library(stringr)
 
 # Import
-path <- "/Users/schiba/data/pm-02/ugz_luftqualitaetsmessung_seit-2012.csv"
+path <- "D:/Data/zhaw/ugz_luftqualitaetsmessung_seit-2012.csv"
 
 # Read headers and data
 headers <- read.csv(path, header = FALSE, nrows = 6, stringsAsFactors = FALSE)
@@ -47,152 +47,38 @@ col_info <- tibble(col_name = names(data)[-1]) |>
     )
   ) |>
   select(col_name, location, parameter)
-
+view(col_info)
 # Convert to long format, join with column info, then to wide format
 result <- data |>
-  pivot_longer(cols = -datum, names_to = "col_name", values_to = "value") |>
-  left_join(col_info, by = "col_name") |>
-  filter(!is.na(location) & !is.na(parameter)) |>
-  select(-col_name) |>
+  pivot_longer(cols = -datum, names_to = "col_name", values_to = "value") |> # Convert to long format -> 1 row per value under a column that is not datum
+  left_join(col_info, by = "col_name") |> # Join with column info to get location and parameter
+  filter(!is.na(location) & !is.na(parameter)) |> # Filter out rows without location or parameter
+  select(-col_name) |> # Remove column name (as it is no longer needed and was replaced by location and parameter)
   pivot_wider(
     id_cols = c(datum, location),
     names_from = parameter,
     values_from = value
-  ) |>
-  mutate(across(where(is.numeric), ~ round(., 2))) |>
-  rename(standort = location) |>
-  mutate(datum = as.Date(datum))
+  ) |> # Convert to wide format -> 1 row per location and date (parameter to colmn name and values to column values)
+  mutate(across(where(is.numeric), ~ round(., 2))) |> # Round numeric columns to 2 decimal places -> may cause loss of precision
+  rename(standort = location) |> # Rename location to standort
+  mutate(datum = as.Date(datum)) # Convert datum to Date type
 
 # Extensions
-options("lubridate.week.start" = 1)
+options("lubridate.week.start" = 1) # Set week start to Monday
 
 result["wochentag"] <- result$datum |>
-  ymd() |>
-  wday(label = TRUE, abbr = TRUE)
+  ymd() |> # Convert to Date object
+  wday(label = TRUE, abbr = TRUE) # Get weekday as factor with labels
 
 result <- result |>
   mutate(wochentag = factor(wochentag,
     levels = levels(wochentag),
     labels = str_sub(levels(wochentag), 1, 2)
-  ))
+  )) # Mutate weekday to factor with abbreviated labels with only two characters
 
 result["monat"] <- result$datum |>
-  ymd() |>
-  month(label = TRUE, abbr = TRUE)
+  ymd() |> # Convert to Date object
+  month(label = TRUE, abbr = TRUE) # Get month as factor with labels
 
 result["jahr"] <- result$datum |>
-  year()
-
-# Visualizations
-# Scatterplot for Stampfenbachstrasse
-result |>
-  filter(standort == "stampfenbachstrasse") |>
-  ggplot(aes(x = o3_max_h1, y = strglo)) +
-  geom_point() +
-  geom_smooth(method = "loess", se = FALSE) +
-  labs(
-    x = "Maximale Ozonkonzentration während einer Stunde (µg/m³)",
-    y = "Globalstrahlung (W/m²)",
-    caption = "Scatterplot der Ozonkonzentration und Globalstrahlung für den Standort Stampfenbachstrasse"
-  ) +
-  theme(
-    axis.title = element_text(size = 14),
-    plot.caption = element_text(size = 12)
-  )
-
-# Plot NOx concentration over time for Schimmelstrasse and Heubeeribüel
-result |>
-  filter(standort %in% c("schimmelstrasse", "heubeeribuel")) |>
-  mutate(nox = no + no2) |>
-  ggplot(aes(x = datum, y = nox, color = standort)) +
-  geom_line() +
-  labs(
-    x = "Datum",
-    y = "NOx Konzentration (µg/m³)",
-    caption = "Verlauf der NOx-Konzentration über den gesamten Zeitraum für die Standorte Schimmelstrasse und Heubeeribüel"
-  ) +
-  theme(
-    axis.title = element_text(size = 14),
-    plot.caption = element_text(size = 12),
-    legend.position = "top",
-    legend.title = element_blank()
-  )
-
-# Boxplot for PM10 concentration by weekday at Rosengartenstrasse
-result |>
-  filter(standort == "rosengartenstrasse") |>
-  ggplot(aes(x = wochentag, y = pm10)) +
-  geom_boxplot() +
-  labs(
-    x = "Wochentag",
-    y = "PM10 Konzentration (µg/m³)",
-    caption = "Streuung der PM10-Konzentration pro Wochentag für den Standort Rosengartenstrasse"
-  ) +
-  theme(
-    axis.title = element_text(size = 14),
-    plot.caption = element_text(size = 12)
-  )
-
-# Plot NOx concentration over time for all four stations from 2012 to 2020
-result |>
-  filter(datum >= as.Date("2012-01-01") & datum <= as.Date("2020-12-31")) |>
-  mutate(nox = no + no2) |>
-  # First calculate monthly values for each year
-  group_by(standort, jahr, monat) |>
-  summarise(
-    year_month_mean = mean(nox, na.rm = TRUE)
-  ) |>
-  mutate(
-    monat_date = make_date(2012, monat, 1), # Use 2012 for consistent x-axis
-    jahr = as.factor(jahr) # Convert year to factor for discrete colors
-  ) |>
-  ggplot() +
-  # Add points for individual years with color
-  geom_point(aes(x = monat_date, y = year_month_mean, color = jahr),
-    size = 2, alpha = 0.7
-  ) +
-  geom_line(aes(x = monat_date, y = year_month_mean, color = jahr, group = jahr),
-    alpha = 0.4, linewidth = 0.5
-  ) +
-  # Add summary line and ribbon
-  stat_summary(
-    aes(x = monat_date, y = year_month_mean),
-    fun = mean,
-    geom = "line",
-    linewidth = 1.2,
-    color = "black"
-  ) +
-  stat_summary(
-    aes(x = monat_date, y = year_month_mean),
-    fun.data = function(y) {
-      data.frame(
-        ymin = mean(y) - sd(y),
-        ymax = mean(y) + sd(y)
-      )
-    },
-    geom = "ribbon",
-    fill = "grey",
-    alpha = 0.2
-  ) +
-  facet_wrap(~standort, scales = "free_y") +
-  scale_x_date(date_labels = "%B", date_breaks = "1 month") +
-  scale_color_viridis_d(name = "Jahr") + # Use viridis color palette
-  labs(
-    x = "Monat",
-    y = "NOx-Konzentration (µg/m³)",
-    caption = "Mittlere monatliche NOx-Konzentrationen mit Standardabweichung (2012-2020)\nFarbige Punkte und Linien zeigen Monatsmittelwerte einzelner Jahre"
-  ) +
-  theme_light() +
-  theme(
-    axis.title = element_text(size = 12),
-    axis.text = element_text(size = 10),
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    plot.caption = element_text(size = 10),
-    strip.text = element_text(size = 10),
-    panel.grid.minor = element_blank(),
-    legend.position = "right",
-    legend.title = element_text(size = 10),
-    legend.text = element_text(size = 9)
-  )
-
-print(head(result), width = Inf)
+  year() # Get year as factor
