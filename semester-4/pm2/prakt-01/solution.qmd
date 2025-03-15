@@ -19,7 +19,7 @@ library(lubridate)
 library(tidyverse)
 library(stringr)
 
-path <- "D:/Data/zhaw/ugz_luftqualitaetsmessung_seit-2012.csv"
+path <- "/Users/schiba/data/pm-02/ugz_luftqualitaetsmessung_seit-2012.csv"
 ```
 
 ```{r prepare_headers, echo=FALSE}
@@ -131,7 +131,7 @@ notwendig.
 result |>
     filter(standort == "stampfenbachstrasse") |>
     ggplot(aes(x = o3_max_h1, y = strglo)) +
-    geom_point(alpha=0.2) +
+    geom_point(alpha = 0.2) +
     geom_smooth(method = "loess", se = FALSE, message = FALSE) +
     labs(
         x = "Maximale Ozonkonzentration während einer Stunde (µg/m³)",
@@ -202,7 +202,7 @@ result |>
     scale_y_log10() + # Apply log transformation to the y-axis
     labs(
         x = "Wochentag",
-        y = expression("log(PM10 Konzentration)" ~ "(µg/m³)"), # Update y-axis label to reflect log transformation
+        y = expression("PM10 Konzentration" ~ "(µg/m³)"), # Update y-axis label to reflect log transformation
     ) +
     theme_light() + # Use a light theme for better contrast
     theme(
@@ -210,6 +210,7 @@ result |>
     )
 ```
 
+Nur die Achse ist Log Transformiert. Die Daten sind immernoch in der Originalen Form.
 Log transformiert macht die Ausreisser nach unten und oben sehr viel besser sichtbar.
 
 {{< pagebreak >}}
@@ -289,7 +290,6 @@ result |>
 #| fig-height: 9
 #| fig-align: center
 #| fig-cap: "Monatliche Verteilung der log-transformierten NOx-Konzentrationen mit Trendlinie (2012-2020) Boxplots zeigen Quartile je Monat, farbige Linien zeigen den geglätteten Mittelwert"
-#| out-width: 6in
 #| out-height: 7in
 result |>
     filter(datum >= as.Date("2012-01-01") & datum <= as.Date("2020-12-31")) |>
