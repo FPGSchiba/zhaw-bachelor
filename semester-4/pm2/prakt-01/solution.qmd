@@ -11,10 +11,11 @@ output:
     page_breaks: "before"
 ---
 
+Video Erklärung: [Hier](https://zhaw-my.sharepoint.com/:v:/g/personal/erharjan_students_zhaw_ch/EShZng_OruxPveGFOJwGanYB7EBn2y6u1CLaenYXzm9BCQ?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D&e=qHJCBc)
+
 {{< pagebreak >}}
 
 ```{r setup, include=FALSE, echo=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
 library(lubridate)
 library(tidyverse)
 library(stringr)

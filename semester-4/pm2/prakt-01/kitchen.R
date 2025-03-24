@@ -4,7 +4,7 @@ library(tidyverse)
 library(stringr)
 
 # Import
-path <- "D:/Data/zhaw/ugz_luftqualitaetsmessung_seit-2012.csv"
+path <- "/Users/schiba/data/pm-02/ugz_luftqualitaetsmessung_seit-2012.csv"
 
 # Read headers and data
 headers <- read.csv(path, header = FALSE, nrows = 6, stringsAsFactors = FALSE)
@@ -82,3 +82,5 @@ result["monat"] <- result$datum |>
 
 result["jahr"] <- result$datum |>
   year() # Get year as factor
+
+view(result)
