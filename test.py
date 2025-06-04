@@ -1,60 +1,30 @@
-import sys
-import re
-import heapq
-from collections import defaultdict, Counter, deque
-import pyperclip as pc
-def pr(s):
-    print(s)
-    pc.copy(s)
-sys.setrecursionlimit(10**6)
-infile = 'test.txt'
-p1 = 0
-p2 = 0
-D = open(infile).read().strip()
-G = D.split('\n')
-G = [[int(x) for x in row] for row in G]
-R = len(G)
-C = len(G[0])
+import numpy as np
+import matplotlib.pyplot as plt
 
-def ways1(sr,sc):
-    """How many different 0s can I reach going down from here?"""
-    Q = deque([(sr,sc)])
-    ans = 0
-    SEEN = set()
-    while Q:
-        r,c = Q.popleft()
-        if (r,c) in SEEN:
-            continue
-        SEEN.add((r,c))
-        if G[r][c]==0:
-            ans += 1
-        for dr,dc in [(-1,0),(0,1),(1,0),(0,-1)]:
-            rr = r+dr
-            cc = c+dc
-            if 0<=rr<R and 0<=cc<C and G[rr][cc] == G[r][c]-1:
-                Q.append((rr,cc))
-    return ans
+# Data
+x = np.array([0, 1, 2, 3, 4])
+y = np.array([6, 12, 30, 80, 140])
 
-DP = {}
-def ways(r,c):
-    if G[r][c]==0:
-        return 1
-    if (r,c) in DP:
-        return DP[(r,c)]
-    ans = 0
-    for dr,dc in [(-1,0),(0,1),(1,0),(0,-1)]:
-        rr = r+dr
-        cc = c+dc
-        if 0<=rr<R and 0<=cc<C and G[rr][cc] == G[r][c]-1:
-            ans += ways(rr,cc)
-    DP[(r,c)] = ans
-    return ans
+# Design matrix
+A = np.column_stack((np.exp(x), np.ones_like(x)))
 
-for r in range(R):
-    for c in range(C):
-        if G[r][c]==9:
-            p1 += ways1(r,c)
-            p2 += ways(r,c)
+# Normal equations
+ATA = A.T @ A
+ATb = A.T @ y
+params = np.linalg.solve(ATA, ATb)
+a, c = params
 
-pr(p1)
-pr(p2)
+# Fitted function
+x_fit = np.linspace(1, 5, 100)
+y_fit = a * np.exp(x_fit) + c
+
+# Plot
+plt.scatter(x, y, color='red', label='Data')
+plt.plot(x_fit, y_fit, label='Fitted $f(x) = a \exp(x) + c$')
+plt.legend()
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Least Squares Fit')
+plt.show()
+
+print(f"a = {a}, c = {c}")

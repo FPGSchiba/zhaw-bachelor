@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def bisektion(f, a=1, b=2, tol=1.e-6):
     k = 0 # zaehlt Schleifendurchlaeufe
     
@@ -12,7 +15,7 @@ def bisektion(f, a=1, b=2, tol=1.e-6):
         # Entscheid ob linkes oder rechtes teilintervall
         if fmid * f(b) < 0:
             a = mid
-        elif fmid * f(b)> 0:
+        elif fmid * f(b) > 0:
             b = mid
         else:
             return mid, mid, k
@@ -30,5 +33,8 @@ def f2(x):
 def f3(x):
     return 3 - x**2
 
-a, b, k = bisektion(f3,1, 2)
+def f4(x):
+    return np.sin(x) + 1
+
+a, b, k = bisektion(f4, -3, 0)
 print(a, b, k)
