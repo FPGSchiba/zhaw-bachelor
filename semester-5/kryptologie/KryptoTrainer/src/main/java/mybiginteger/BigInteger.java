@@ -3353,7 +3353,14 @@ public class BigInteger
    * Note that the factors p and q are assumed to be prime numbers.
    */
   public BigInteger myModPow(BigInteger exponent, BigInteger p, BigInteger q) {
-    return BigInteger.ZERO;
+      BigInteger a1 = this.modPow(exponent.mod(p.subtract(BigInteger.ONE)), p);
+      BigInteger a2 = this.modPow(exponent.mod(q.subtract(BigInteger.ONE)), q);
+
+      BigInteger u1 = q.modInverse(p);
+      BigInteger u2 = p.modInverse(q);
+
+      // u1*a1*p + u2*a2*q mod p*q
+      return a1.multiply(u1.multiply(q)).add(a2.multiply(u2.multiply(p))).mod(p.multiply(q));
   }
 
   /**
