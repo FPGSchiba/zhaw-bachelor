@@ -1,7 +1,10 @@
 package kryptotrainer;
 
+import mybiginteger.BigInteger;
+
 import javax.swing.UIManager;
 import java.awt.*;
+import java.util.Random;
 
 /**
  * <p>Title: KryptoTrainer</p>
@@ -48,5 +51,16 @@ public class KryptoTrainerClass {
       e.printStackTrace();
     }
     new KryptoTrainerClass();
+    /*
+    while (true) {
+      long startTime = System.currentTimeMillis();
+      BigInteger prime = new BigInteger(2048, new Random());
+      if (prime.isProbablePrime(10)) {
+        long elapsed = System.currentTimeMillis() - startTime;
+        System.out.println("Found prime: " + prime + " (Time: " + elapsed + " ms)");
+        // Timer resets here for next iteration
+      }
+    }
+    */
   }
 }

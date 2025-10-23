@@ -3390,6 +3390,37 @@ public class BigInteger
    *         false if it's definitely composite.
    */
   public boolean myIsProbablePrime(int t) {
+    if (this.compareTo(TWO) < 0) {
+      return false; // 0 and 1 are not prime
+    }
+    if (this.compareTo(BigInteger.valueOf(3)) <= 0) {
+      return true; // 2 and 3 are prime
+    }
+    // Check number for small prime factors first
+    for (int smallPrime : tableOfPrimes) {
+      BigInteger prime = BigInteger.valueOf(smallPrime);
+      if (prime.multiply(prime).compareTo(this) > 0) {
+        break; // No need to check larger primes
+      }
+      if (this.mod(prime).equals(BigInteger.ZERO)) {
+        return false; // Definitely composite
+      }
+    }
+
+    // Fermat primality test
+    for (int i = 0; i < t; i++) {
+      // Choose a random integer a in the range [2, this-2]
+      BigInteger a;
+      do {
+        a = new BigInteger(this.bitLength(), new Random());
+      } while (a.compareTo(TWO) < 0 || a.compareTo(this.subtract(TWO)) > 0);
+
+      // Fermat's little theorem: a^(this-1) = 1 (mod this)
+      BigInteger result = a.modPow(this.subtract(ONE), this);
+      if (!result.equals(ONE) || !this.gcd(a).equals(ONE)) {
+        return false; // Definitely composite
+      }
+    }
     return true;
   }
 
@@ -3405,7 +3436,31 @@ public class BigInteger
    * tableOfPrimes.
    */
   public static int[] createTableOfPrimes(int max) {
-    return null;
+    int maxCheck = (int) Math.ceil(Math.sqrt(max));
+    boolean[] isComposite = new boolean[max + 1];
+    Arrays.fill(isComposite, true);
+    for (int i = 2; i <= maxCheck; i++) {
+      if (isComposite[i]) {
+        for (int j = i*i; j <= max; j += i) {
+          isComposite[j] = false;
+        }
+      }
+    }
+    int count = 0;
+    for (int i = 2; i <= max; i++) {
+      if (isComposite[i]) {
+        count++;
+      }
+    }
+    tableOfPrimes = new int[count];
+    int index = 0;
+    for (int i = 2; i <= max; i++) {
+      if (isComposite[i]) {
+        tableOfPrimes[index] = i;
+        index++;
+      }
+    }
+    return tableOfPrimes;
   }
 
   /**
