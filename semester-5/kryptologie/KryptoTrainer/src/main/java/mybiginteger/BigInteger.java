@@ -3571,7 +3571,38 @@ public class BigInteger
       throw new ArithmeticException("bitLength < 2");
     }
 
-    return ZERO;
+    while (true) {
+      // Generate random prime q of bitLength-1 bits
+      BigInteger q = new BigInteger(bitLength - 1, certainity, rnd);
+      // Set first and last bit to 1 to ensure correct bitLength and oddness
+      q = q.setBit(0);
+      q = q.setBit(bitLength - 2);
+
+      if (q.mod(BigInteger.valueOf(5)).not().equals(BigInteger.ZERO)) {
+        continue;
+      }
+      boolean isOk = true;
+      for (int i = 1; i < tableOfPrimes.length; i++) { // Skip 2
+        BigInteger r = BigInteger.valueOf(tableOfPrimes[i]);
+        BigInteger eq = (r.subtract(BigInteger.ONE)).divide(BigInteger.TWO);
+        if (q.mod(r).equals(eq)) {
+          isOk = false;
+          break; // Definitely composite
+        }
+      }
+      if (!isOk) {
+        continue;
+      }
+      if (!q.isProbablePrime(certainity)) {
+        continue; // q is definitely composite
+      }
+      // Compute p = 2q + 1
+      BigInteger p = q.multiply(BigInteger.TWO).add(BigInteger.ONE);
+      // Test p for primality
+      if (p.myIsProbablePrime(certainity)) {
+        return p; // p is probably a safe prime
+      }
+    }
   }
 
   /**
