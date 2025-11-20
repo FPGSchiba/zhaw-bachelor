@@ -3468,7 +3468,15 @@ public class BigInteger
    * of the square root of this.
    */
   public BigInteger mySqrtFloor() {
-    return BigInteger.ZERO;
+    BigInteger startValue = BigInteger.ZERO.setBit(this.bitLength / 2);
+    BigInteger currentValue;
+    BigInteger nextValue;
+    do {
+      currentValue = startValue;
+      nextValue = currentValue.pow(2).add(this).divide(BigInteger.TWO.multiply(currentValue));
+      startValue = nextValue;
+    } while (currentValue.compareTo(nextValue) != 0);
+    return nextValue;
   }
 
   /**
@@ -3483,6 +3491,29 @@ public class BigInteger
    * Returns an integer factor of this, or ONE if this is prime.
    */
   public BigInteger myPollardRho() {
+    if (this.isProbablePrime(100)) {
+      return BigInteger.ONE;
+    }
+    BigInteger x0 = new BigInteger(this.bitLength(), new Random());
+    BigInteger y0 = x0;
+    BigInteger a = new BigInteger(this.bitLength(), new Random());
+    while (a.equals(BigInteger.ZERO) || a.equals(new BigInteger(-2).mod(this))) {
+      a = new BigInteger(this.bitLength(), new Random());
+    }
+    BigInteger i = BigInteger.ZERO;
+    BigInteger maxIter = this.mySqrtFloor().mySqrtFloor().multiply(BigInteger.valueOf(2));
+    while (maxIter.compareTo(i) > 0) {
+      BigInteger xi = x0.modPow(BigInteger.TWO, this).add(a).mod(this);
+      BigInteger yi = y0.modPow(BigInteger.TWO, this).add(a).mod(this);
+      yi = yi.modPow(BigInteger.TWO, this).add(a).mod(this);
+      BigInteger d = xi.subtract(yi).gcd(this);
+      if (d.compareTo(BigInteger.ONE) > 0 && d.compareTo(this) < 0) {
+        return d;
+      }
+      x0 = xi;
+      y0 = yi;
+      i = i.add(BigInteger.ONE);
+    }
     return BigInteger.ONE;
   }
   
