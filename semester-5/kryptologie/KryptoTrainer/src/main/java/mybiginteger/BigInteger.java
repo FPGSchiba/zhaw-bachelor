@@ -3484,7 +3484,44 @@ public class BigInteger
    * Caution: ZERO may be a valid result and may hence not be used as "no result" flag.
    */
   public BigInteger myModSqrt(BigInteger p) {
-    return BigInteger.valueOf(-1);
+    if (!p.isProbablePrime(100)) {
+      throw new NumberFormatException("p is not a prime number");
+    }
+
+    // Euler's criterion
+    BigInteger euler = this.modPow(p.subtract(BigInteger.ONE).divide(BigInteger.valueOf(2)), p);
+    if (!euler.equals(BigInteger.ONE)) {
+      return BigInteger.valueOf(-1); // No square root exists
+    }
+
+    // Case one: p = 3 (mod 4)
+    if (p.mod(BigInteger.valueOf(4)).equals(BigInteger.valueOf(3))) {
+      return this.modPow(p.add(BigInteger.ONE).divide(BigInteger.valueOf(4)), p);
+    } else if (p.mod(BigInteger.valueOf(4)).equals(BigInteger.ONE)) { // Case two: p = 1 (mod 4)
+      BigInteger h = BigInteger.TWO;
+      do {
+        // Find a quadratic non-residue h
+        h = h.add(BigInteger.ONE);
+      } while (!h.modPow(p.subtract(BigInteger.ONE).divide(BigInteger.valueOf(2)), p).equals(p.subtract(ONE)));
+
+      BigInteger e1 = p.subtract(BigInteger.ONE).divide(BigInteger.valueOf(2));
+      BigInteger e2 = p.subtract(BigInteger.ONE);
+
+      BigInteger c;
+      do {
+        e1 = e1.divide(BigInteger.TWO);
+        e2 = e2.divide(BigInteger.TWO);
+        c = this.modPow(e1, p).multiply(h.modPow(e2, p)).mod(p);
+        if (c.equals(p.subtract(ONE))) {
+          e2 = e2.add(p.subtract(ONE).divide(BigInteger.TWO));
+        }
+      } while (e1.mod(BigInteger.TWO).equals(BigInteger.ZERO));
+
+      BigInteger r = this.modPow(e1.add(BigInteger.ONE).divide(BigInteger.TWO), p);
+      BigInteger t = h.modPow(e2.divide(BigInteger.TWO), p);
+      return r.multiply(t).mod(p);
+    }
+    return BigInteger.valueOf(-1); // Should never be reached
   }
 
   /**
@@ -3676,8 +3713,55 @@ public class BigInteger
                                 BigInteger p,
                                 BigInteger a,
                                 BigInteger b) throws Exception {
-    BigInteger[] res = {ZERO, ZERO};
-    return res;
+    // Check if one of the points is the point at infinity
+    if (this.equals(p)) {
+      return new BigInteger[]{Q_x, Q_y};
+    }
+    if (Q_x.equals(p)) {
+      return new BigInteger[]{this, P_y};
+    }
+
+    // Check if points are on the curve
+    BigInteger r = P_y.modPow(BigInteger.TWO, p);
+    BigInteger s = this.modPow(BigInteger.valueOf(3), p)
+        .add(a.multiply(this).mod(p))
+        .add(b).mod(p);
+    if (!r.equals(s)) {
+      throw new Exception("Point P is not on the curve");
+    }
+    r = Q_y.modPow(BigInteger.TWO, p);
+    s = Q_x.modPow(BigInteger.valueOf(3), p)
+        .add(a.multiply(Q_x).mod(p))
+        .add(b).mod(p);
+    if (!r.equals(s)) {
+      throw new Exception("Point Q is not on the curve");
+    }
+
+    // Check for case: P_x != Q_x
+    if (!this.equals(Q_x)) {
+      BigInteger ys = P_y.subtract(Q_y).mod(p);
+      BigInteger xs = this.subtract(Q_x).mod(p);
+      BigInteger m = ys.multiply(xs.modInverse(p)).mod(p);
+      BigInteger x = m.modPow(BigInteger.TWO, p).subtract(this).subtract(Q_x).mod(p);
+      BigInteger y = m.negate().multiply(x.subtract(this)).subtract(P_y).mod(p);
+      return new BigInteger[]{x, y};
+    }
+
+    // Check for case: P_x == Q_x and P_y == -Q_y
+    if (this.equals(Q_x) && P_y.equals(Q_y.negate().mod(p))) {
+      return new BigInteger[]{p, ZERO};
+    }
+
+    // Check for case: P_x == Q_x and P_y != Q_y
+    if (this.equals(Q_x) && !P_y.equals(Q_y)) {
+      BigInteger m = BigInteger.valueOf(3).multiply(this.modPow(BigInteger.TWO, p)).add(a).multiply(P_y.multiply(BigInteger.TWO).modInverse(p)).mod(p);
+      BigInteger x = m.modPow(BigInteger.TWO, p).subtract(this.multiply(BigInteger.TWO)).mod(p);
+      BigInteger y = (m.negate().multiply(x.subtract(this))).subtract(P_y).mod(p);
+      return new BigInteger[]{x, y};
+    }
+
+    // Should never be reached
+    return new BigInteger[]{ZERO, ZERO};
   }
 
   /**
