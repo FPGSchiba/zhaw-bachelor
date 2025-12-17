@@ -3760,6 +3760,14 @@ public class BigInteger
       return new BigInteger[]{x, y};
     }
 
+    // Check for case: P == Q
+    if (this.equals(Q_x) && P_y.equals(Q_y)) {
+      BigInteger m = BigInteger.valueOf(3).multiply(this.modPow(BigInteger.TWO, p)).add(a).multiply(P_y.multiply(BigInteger.TWO).modInverse(p)).mod(p);
+      BigInteger x = m.modPow(BigInteger.TWO, p).subtract(this.multiply(BigInteger.TWO)).mod(p);
+      BigInteger y = (m.negate().multiply(x.subtract(this))).subtract(P_y).mod(p);
+      return new BigInteger[]{x, y};
+    }
+
     // Should never be reached
     return new BigInteger[]{ZERO, ZERO};
   }
@@ -3774,7 +3782,16 @@ public class BigInteger
                                      BigInteger p,
                                      BigInteger a,
                                      BigInteger b) throws Exception {
-    BigInteger[] res = {ZERO, ZERO};
+    BigInteger[] base = {this, y};
+    BigInteger[] res = {p, ZERO}; // Point at infinity as neutral element
+
+    for (int i = 0; i < factor.bitLength(); i++) {
+      if (factor.testBit(i)) {
+        res = res[0].elliptAdd(res[1], base[0], base[1], p, a, b);
+      }
+      base = base[0].elliptAdd(base[1], base[0], base[1], p, a, b);
+    }
+
     return res;
   }
 }
