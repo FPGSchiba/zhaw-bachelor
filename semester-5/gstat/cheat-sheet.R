@@ -26,6 +26,19 @@ result <- optim(par = start, fn = negLogLik, method = "BFGS", x = x.gamma) # Max
 result$par # Geschätzte Parameter
 
 # Konfidenzintervalle
+# Manuell (z-test)
+alpha <- 0.01 # Für Conf-Level: 0.99
+z <- qnorm(1 - alpha / 2) # z := Quantil wert in formel geschrieben als z_{1-\frac{\alpha}{2}}
+mean + c(-1, 1) * sd / sqrt(n) * z # Schlussendliches Intervall
+# mean, sd und n müssen bekannt sein
+
+# Manuell (t-test)
+alpha <- 0.01 # Für conf-level: 0.99
+t <- qt(1 - alpha / 2, df = n - 1)
+mean + c(-1, 1) * sd / sqrt(n) * t # Schlussendliches Intervall
+# mean, sd und n müssen bekannt sein
+
+# Z-Test
 library(BSDA)
 x <- rnorm(20, mean = 0.5, sd = 1)
 z.test(
@@ -217,3 +230,9 @@ tbl <- margin.table(UCBAdmissions, c(1, 2))
 chisq.test(
   x = tbl, # Kontingenztabelle
 ) # Ausgabe des Testergebnisses
+
+# Konstruktion einer Tabelle mit daten
+tab <- rbind(
+  c(95, 300, 160, 250, 320), #  Erste spalte
+  c(75, 200, 100, 230, 270) # Zweite spalte
+)
