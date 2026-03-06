@@ -8,6 +8,8 @@ coef(fit)
 # Gleichung der Regressionsgeraden: Preis = -191.65757 + 10.47909 * Alter
 
 ## B
+# H_0: beta = 0
+# H_A: beta != 0
 summary(fit)
 
 # Ja das Alter hat einen signifikanten Einfluss auf den Preis,
@@ -24,7 +26,7 @@ t <- (hat_beta - to_be_tested_slope) / se_beta # realisierte Teststatistik
 # Es gibt nicht genügend Beweise, um zu behaupten, dass der Koeffizient des Alters signifikant von 15 abweicht.
 
 ## D
-confint(fit, level = 0.95)
+confint(fit, parm = 2, level = 0.95)
 # Das 95%-Konfidenzintervall für den Koeffizienten des Alters (beta) liegt zwischen 6.823468 und 14.13472
 
 ##  E
@@ -52,20 +54,25 @@ summary(fit)$r.squared
 
 ## C
 x0 <- data.frame(speed = 10)
-predict(fit, newdata = x0, interval = "confidence", level = 0.95)
-# Er muss mit ca 150 Schlägen pro Minute rechnen, mit einem 95%-Konfidenzintervall von ca [148.9, 152.4] Schlägen pro Minute.
+predict(fit, newdata = x0, interval = "prediction", level = 0.95) #  Wichtig: Hier war ein Prognoseintervall gefragt, nicht das Konfidenzintervall!
+# Er muss mit ca 150 Schlägen pro Minute rechnen, mit einem 95%-Konfidenzintervall von ca [145.7, 155.6] Schlägen pro Minute.
 
 ##  D
 x0 <- data.frame(speed = 0)
 predict(fit, newdata = x0, interval = "confidence", level = 0.95)
 # Der geschätzte Ruhepuls beträgt ca 86 Schläge pro Minute, mit einem 95%-Konfidenzintervall von ca [81.3, 92.0] Schlägen pro Minute.
-# Das ist eher hoch für einen Ruhepuls.
+# Das ist eher hoch für einen Ruhepuls. Extrapolation!
 
 ## E
 coef(fit)
+confint(fit, parm = 2, level = 0.95) # Plausibilität wird mit Konfidenzintervall geprüft
 # Der Puls nimmt pro km/h um ca 6.4 Schläge pro Minute zu.
 
 ## F
 fit.con2 <- lm(puls ~ speed, data = conconi2)
 summary(fit.con2)
 coef(fit.con2)
+
+confint(fit.con2, parm = 2, level = 0.95) # Überlappung der Konfidenzintervalle prüfen > Nicht überlappen heisst signifikant verschieden
+# Ja, die Steigung ist signifikant von 0 verschieden, da das 95%-Konfidenzintervall für die Steigung (beta) nicht 0 enthält.
+# Das bedeutet, dass es eine signifikante lineare Beziehung zwischen Puls und Geschwindigkeit gibt.
