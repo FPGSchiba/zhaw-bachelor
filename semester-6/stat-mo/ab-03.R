@@ -30,6 +30,7 @@ plot.lmSim(fit.inv)
 
 # Was gut aussieht: Residuen vs. fitted values (keine Muster, keine Heteroskedastizität) und Normal Q-Q Plot (Residuen scheinen normalverteilt zu sein).
 # Was nicht so gut aussieht: Scale-Location Plot, speziell bei den simulationen verläuft das Modell nicht so gut
+# Doch der Scale-Location Plot sieht gut aus, falls nicht sicher nsim in plot.lmSim() erhöhen.
 
 ##  E
 summary(fit.inv)
