@@ -14,3 +14,4 @@ def get_so_for_sd(sd):
 if __name__ == '__main__':
     print(get_bo_for_bi(4))
     print(get_so_for_sd(0.25))
+    print(math.log2((4*1_000_000)/(BASE_SD * ELEM) - 1))
