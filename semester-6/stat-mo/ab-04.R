@@ -25,7 +25,7 @@ plot.lmSim(fit)
 
 ### Was gut aussieht: Der QQ-Plot zeigt, dass die Residuen annähernd normalverteilt sind.
 ### Was nicht gut aussieht: Die Residuen vis fitted zeigen eine systematische Abweichung von der Regressionslinie.
-### Was auch noch nicht gut: Der Scale-Location Plot zeigt eine komische abweichung von einer Wagerechten.
+### Was auch noch nicht gut: Der Scale-Location Plot zeigt eine komische abweichung von einer Wagerechten. (Links variable varianz bis ca. 40 mm Regenmenge, danach deutlich konstantere Varianz)
 
 ## E
 ###  Um die systematische Abweichung der Residuen "gerade" zu biegen.
@@ -65,7 +65,7 @@ MPIZH
 
 ##  A
 fit <- lm(MPI ~ KPI + HZ, data = MPIZH)
-###  MPI = beta0 + beta1 * KPI + beta2 * HZ
+###  MPI = beta0 + beta1 * KPI + beta2 * HZ + E mit E ~ N(0, sigma^2) iid
 
 ##  B
 coef(fit)
@@ -89,4 +89,5 @@ summary(fit)$coefficients
 
 ## F
 summary(fit)$r.squared
-###  Das R-Quadrat beträgt 0.93, was bedeutet, dass 93% der Varianz im MPI durch die Variablen KPI und HZ erklärt werden kann.
+###  Das R-Quadrat beträgt 0.92, was bedeutet, dass 92% der Varianz im MPI durch die Variablen KPI und HZ erklärt werden kann.
+### WICHTIG: Adjusted R-squared benutzen bei multiple Regression, da es die Anzahl der Prädiktoren berücksichtigt.
