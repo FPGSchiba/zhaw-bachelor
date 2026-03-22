@@ -23,3 +23,4 @@ data
 *.fls
 *.fdb_latexmk
 *.synctex.gz
+**/saved_models/**
