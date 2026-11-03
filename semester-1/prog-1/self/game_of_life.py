@@ -13,15 +13,11 @@ SCALE = 3
 
 FPS = 10
 
-AGE_DEATH_CAP = 20
 DEAD_CELL = 0
-MUTATED_CELL = -1
+ALIVE_CELL = 1
 
-MUTATION_CHANCE = 0.1
-INSTANT_DEATH_CHANCE = 0.1
-
-AGING_FACTOR = 8
 DEAD_COLOR = pygame.Color(255, 255, 255)
+ALIVE_COLOR = pygame.Color(0, 0, 0)
 
 playing = True
 
@@ -59,19 +55,7 @@ def draw_cell(x, y, cell):  # X = 1 -> Scaled-X: 4
     scaled_x = x * SCALE
     scaled_y = y * SCALE
     pos = (scaled_x, scaled_y)
-    if cell == DEAD_CELL:
-        color = DEAD_COLOR
-    elif cell <= MUTATED_CELL:
-        cell = abs(cell)
-        if cell * 4 < 200:
-            color = (0, 0, cell * 4)
-        else:
-            color = (0, 0, 200)
-    else:
-        if cell * 4 < 200:
-            color = (cell * 4, cell * 4, cell * 4)
-        else:
-            color = (200, 200, 200)
+    color = DEAD_COLOR if cell == DEAD_CELL else ALIVE_COLOR
     screen.fill(color, (pos, (SCALE, SCALE)))
 
 
@@ -86,7 +70,7 @@ def prepare_game():
             x = random.randint(0, SIZE - 1)
             y = random.randint(0, SIZE - 1)
             if environment[y][x] == DEAD_CELL:
-                environment[y][x] = 1
+                environment[y][x] = ALIVE_CELL
                 generated_cells += 1
                 generating = False
 
@@ -102,34 +86,21 @@ while playing:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             playing = False
-    new_environment = environment
+    # Copy each row so updates don't affect neighbor counts of this generation
+    new_environment = [row[:] for row in environment]
 
-    for y, row in enumerate(new_environment):
+    for y, row in enumerate(environment):
         for x, cell in enumerate(row):
             draw_cell(x, y, cell)
             num_neighbors = get_num_neighbors(x, y)
-            if cell == DEAD_CELL:
-                if num_neighbors == 3:
-                    new_environment[y][x] += 1
-            else:
-                if random.random() < INSTANT_DEATH_CHANCE and not cell <= MUTATED_CELL:
-                    new_environment[y][x] = DEAD_CELL
-                elif (num_neighbors > 3 or num_neighbors < 2) and not cell <= MUTATED_CELL:
-                    new_environment[y][x] = DEAD_CELL
-                else:
-                    # Check for mutation
-                    if cell <= MUTATED_CELL:
-                        new_environment[y][x] -= 1
-                    else:
-                        new_environment[y][x] += 1
-                        if random.random() < MUTATION_CHANCE:
-                            new_environment[y][x] = MUTATED_CELL
-                if cell > AGE_DEATH_CAP or cell < -AGE_DEATH_CAP*2:
-                    new_environment[y][x] = DEAD_CELL
+            if cell == DEAD_CELL and num_neighbors == 3:
+                new_environment[y][x] = ALIVE_CELL
+            elif cell != DEAD_CELL and num_neighbors not in (2, 3):
+                new_environment[y][x] = DEAD_CELL
 
+    environment = new_environment
     restart_btton.process()
     pygame.display.flip()
-    environment = new_environment
     clock.tick(FPS)
 
 pygame.quit()
