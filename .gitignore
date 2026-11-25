@@ -24,3 +24,4 @@ data
 *.fdb_latexmk
 *.synctex.gz
 **/saved_models/**
+**/runs/**
