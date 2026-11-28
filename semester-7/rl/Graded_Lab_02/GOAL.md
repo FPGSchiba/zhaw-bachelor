@@ -16,7 +16,7 @@ learning curves, evaluation score and video for the report.
 Jann Erhardt, Gian Gamper (gampegia)
 
 ## Current focus
-Baseline: finish 1M run → save run → learning curve → 10-episode eval → video
+Baseline done (273.54 ± 24.55, runs/dqn_lunarlander_20261125-085950). HPO overnight: 70 trials × 300k, 9 params → then re-validate top 3 on 1M → report
 
 ## Parking lot (later, not part of this lab's DQN submission)
 - **PPO**: policy network outputs a probability distribution over actions → softmax
